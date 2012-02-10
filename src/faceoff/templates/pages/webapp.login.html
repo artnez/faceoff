@@ -1,0 +1,12 @@
+{% extends 'layouts/webapp.html' %}
+
+{% set head_title='Login' %}
+
+{% block content %}
+<div class='row'>
+    <div class='span3 offset3'>
+        <h2>Login</h2>
+        {% include 'forms/login.html' %}
+    </div>
+</div>
+{% endblock %}

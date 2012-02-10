@@ -1,0 +1,10 @@
+{% from 'macros/form.html' import render_field %}
+<form id='join' action='{{ url_for('.join') }}' method='post'>
+    <fieldset>
+        {{ render_field(join_form.nickname, errpos='inline') }}
+        {{ render_field(join_form.email, errpos='inline') }}
+        {{ render_field(join_form.password, errpos='inline') }}
+        {{ render_field(join_form.confirm, errpos='inline') }}
+        <button type='submit' class='btn btn-large btn-primary'>Join</button>
+    </fieldset>
+</form>

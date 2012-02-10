@@ -1,0 +1,24 @@
+{% macro page_id(with_tag=True, prefix='page-') -%}
+    {%- set id = prefix + request.endpoint|replace('.', '-') -%}
+    {%- if with_tag -%}
+        id='{{ id }}'
+    {%- else -%}
+        {{ id }}
+    {%- endif -%}
+{%- endmacro %}
+
+{% macro page_class(with_tag=True, merge=[]) -%}
+    {%- set class = request.endpoint|replace('.', '-') -%}
+    {%- if merge is string -%}
+        {% set merge = [merge] %}
+    {%- endif -%}
+    {%- if merge -%}
+        {% set class = '%s %s' % (class, merge | join(' ')) %}
+    {%- endif -%}
+    {%- if with_tag -%}
+        class='{{ class }}'
+    {%- else -%}
+        {{ class }}
+    {%- endif -%}
+{%- endmacro %}
+
