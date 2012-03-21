@@ -17,7 +17,6 @@ from hashlib import sha1
 from random import random
 from time import time
 from natsort import natsort
-from subprocess import call
 
 _curdir = os.path.dirname(__file__)
 _schema = os.path.join(_curdir, 'schema', 'versions')
@@ -68,6 +67,7 @@ def make_new_db(path):
     """
     build_schema(path, _schema)
     logger().info('created fresh db %s' % path)
+    return path
 
 def build_schema(db_path, schema_path):
     """ 
@@ -100,7 +100,7 @@ def logger(name='db.general'):
     """
     return getLogger(name)
 
-class Factory:
+class Factory(object):
     """ 
     Database connection factory. Stores database configuration settings and
     creates new database connections. 
@@ -150,7 +150,7 @@ class Cursor(sqlite3.Cursor):
 
     def _log(self, *args, **kwargs):
         """ Proxy all logs to the connection logger. """
-        self.connection._log(*args, **kwargs)
+        self.connection._log(*args, **kwargs) # pylint: disable=E1101
 
 class Connection(sqlite3.Connection):
     """
@@ -160,7 +160,7 @@ class Connection(sqlite3.Connection):
     def __init__(self, *args, **kwargs):
         self.ident = self._ident(args[0])
         self._log('connect %s' % args[0])
-        return sqlite3.Connection.__init__(self, *args, **kwargs)
+        sqlite3.Connection.__init__(self, *args, **kwargs)
 
     def cursor(self, cursorClass=None):
         return sqlite3.Connection.cursor(self, cursorClass or Cursor)
@@ -190,9 +190,9 @@ class Connection(sqlite3.Connection):
         message = '[%s] %s' % (self.ident, message)
         getattr(logger('db.query'), level)(message)
 
-class Table:
+class Table(object):
     """
-    Exposes an interface for performing simple CRUD operations on the database.
+    Helps in perform simple CRUD operations on the database.
     """
 
     def __init__(self, db, name):
@@ -204,7 +204,8 @@ class Table:
         Searches the database for the given criteria and returns the first 
         available record. If no records found, None is returned.
         """
-        if pk: where['id'] = pk
+        if pk: 
+            where['id'] = pk
         rows = self.search(sort=sort, order=order, limit=1, **where)
         return rows[0] if rows else None
 
@@ -221,7 +222,8 @@ class Table:
             param.extend(where.values())
         if sort is not None:
             sort = self.clean(sort)
-            if order != 'asc': order = 'desc'
+            if order != 'asc': 
+                order = 'desc'
             query += ' ORDER BY "%s" %s' % (sort, order)
         if limit is not None:
             query += ' LIMIT %d ' % int(limit)
@@ -251,7 +253,8 @@ class Table:
         Runs a SQL UPDATE query on the given primary key and field. This is
         a simple query generator and is not aware of the table schema. 
         """
-        if not len(fields): return
+        if not len(fields): 
+            return
         query = 'UPDATE "%(table)s" SET %(pairs)s WHERE "id"=?' % {
             'table': self.clean(self.name),
             'pairs': ','.join(['"%s"=?' % self.clean(n) for n in fields.keys()])
@@ -271,7 +274,9 @@ class Table:
         """
         self.query('DELETE FROM "%s"' % self.name)
 
-    def query(self, query, params={}):
+    def query(self, query, params=None):
+        if params is None:
+            params = {}
         self.db.execute(query, params)
 
     def create_pk(self):
