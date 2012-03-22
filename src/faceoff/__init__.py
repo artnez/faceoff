@@ -15,4 +15,3 @@ cache.init_app(app)
 db.init_app(app)
 fixtures.init_app(app)
 modules.init_app(app)
-
