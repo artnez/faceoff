@@ -42,6 +42,15 @@ class UserModel(DataModel):
             date_created = int(time())
             )
 
+    def authenticate(self, company_id, nickname, password):
+        user = self.find(company_id=company_id, nickname=nickname)
+        if user is None:
+            return None
+        password = sha1(password + user['salt']).hexdigest()
+        if password != user['password']:
+            return None
+        return user['id']
+
     def generate_salt(self):
         pool = string.ascii_letters + string.digits
         return ''.join(choice(pool) for x in range(8))

@@ -1,4 +1,7 @@
 {% from 'macros/form.html' import render_field %}
+{% if request.args.fail %}
+<div class='alert alert-error'>Credentials no good.</div>
+{% endif %}
 <form id='login' action='{{ url_for('.login') }}' method='post'>
     <fieldset>
         {{ render_field(login_form.nickname, errpos='inline') }}
