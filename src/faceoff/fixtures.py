@@ -60,8 +60,7 @@ class Builder(object):
             self.user.create(
                 company_id=company['id'],
                 nickname='artnez',
-                email='artem@artnez.com',
-                password='p!ngp0ng!'
+                password='faceoff!'
                 )
             for user in self.pick_users(minCount, maxCount):
                 self.user.create(company_id=company['id'], **user)
