@@ -9,7 +9,7 @@ from faceoff.models import CompanyModel, UserModel
 from faceoff.forms import LoginForm, JoinForm
 from faceoff.helpers.decorators import templated
 
-module = Blueprint('webapp', __name__, subdomain='<company>', static_folder='../static')
+module = Blueprint('webapp', __name__, subdomain='<company>')
 
 @module.before_request
 def before_request():

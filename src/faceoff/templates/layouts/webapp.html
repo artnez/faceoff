@@ -1,11 +1,11 @@
 {% extends 'layouts/base.html' %}
 
 {% block stylesheet %}
-    <link rel='stylesheet' media='screen' href='{{ url_for('.static', filename='css/webapp.css') }}'>
+    <link rel='stylesheet' media='screen' href='{{ url_for('public.static', filename='css/webapp.css') }}'>
 {%- endblock %}
 
 {% block javascript %}
-    <script src='{{ url_for('.static', filename='js/webapp.js') }}'></script>
+    <script src='{{ url_for('public.static', filename='js/webapp.js') }}'></script>
 {%- endblock %}
 
 {% block body -%}

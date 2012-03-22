@@ -1,7 +1,7 @@
 {% extends 'layouts/base.html' %}
 
 {% block stylesheet %}
-    <link rel='stylesheet' media='screen' href='{{ url_for('.static', filename='css/public.css') }}'>
+    <link rel='stylesheet' media='screen' href='{{ url_for('public.static', filename='css/public.css') }}'>
 {%- endblock %}
 
 {% block body -%}
