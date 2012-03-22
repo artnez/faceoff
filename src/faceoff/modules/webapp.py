@@ -58,6 +58,6 @@ def join():
     form = JoinForm(request.form)
     if request.method == 'POST' and form.validate():
         # create user
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('.home'))
     return dict(join_form=form)
 
