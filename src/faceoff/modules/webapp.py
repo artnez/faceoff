@@ -52,12 +52,25 @@ def login():
             return redirect(url_for('.home'))
     return dict(login_form=form)
 
+@module.route('/logout')
+def logout():
+    session.pop('user_id')
+    return redirect(url_for('.gate'))
+
 @module.route('/join', methods=['GET', 'POST'])
 @templated()
 def join():
     form = JoinForm(request.form)
     if request.method == 'POST' and form.validate():
-        # create user
-        return redirect(url_for('.home'))
+        nickname = form.nickname.data
+        password = form.password.data
+
+        user = g.user_model.find(company_id=g.company['id'], nickname=nickname)
+        if user is not None:
+            return redirect(url_for('.join', dup=1))
+        else:
+            user_id = g.user_model.create(g.company['id'], nickname, password)
+            session['user_id'] = user_id
+            return redirect(url_for('.home'))
     return dict(join_form=form)
 
