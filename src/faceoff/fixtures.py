@@ -47,12 +47,22 @@ class Builder(object):
 
     def build_companies(self, minCount=3, maxCount=6):
         logger().info('building fixtures: companies')
+        self.company.create(
+            name='Artnez',
+            subdomain='artnez'
+            )
         for company in self.pick_companies(minCount, maxCount):
             self.company.create(**company)
 
     def build_users(self, minCount=3, maxCount=10):
         logger().info('building fixtures: users')
         for company in self.company.search():
+            self.user.create(
+                company_id=company['id'],
+                nickname='artnez',
+                email='artem@artnez.com',
+                password='p!ngp0ng!'
+                )
             for user in self.pick_users(minCount, maxCount):
                 self.user.create(company_id=company['id'], **user)
 
