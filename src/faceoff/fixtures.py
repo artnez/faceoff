@@ -86,9 +86,9 @@ class Builder(object):
     def pick_leagues(self, minCount, maxCount):
         for game in self.pick_data('games', minCount, maxCount):
             name = game['name']
-            info = self.pick_text(1, 3)
+            description = self.pick_text(1, 3)
             active = True if randint(0, 3) else False
-            yield {'name': name, 'info': info, 'active': active}
+            yield {'name': name, 'description': description, 'active': active}
 
     def pick_text(self, minCount, maxCount):
         return generate_lorem_ipsum(n=randint(minCount, maxCount), html=False)

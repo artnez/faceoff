@@ -49,11 +49,11 @@ class UserModel(DataModel):
 
 class LeagueModel(DataModel):
 
-    def create(self, company_id, name, info=None, active=True):
+    def create(self, company_id, name, description=None, active=True):
         return self.insert(
             company_id = company_id,
             name = name,
-            info = info,
+            description = description,
             active = '1' if active else '0',
             date_created = int(time())
             )

@@ -32,7 +32,7 @@ CREATE TABLE league (
     id CHAR(32) PRIMARY KEY,
     company_id INTEGER,
     name VARCHAR(64),
-    info TEXT DEFAULT NULL,
+    description TEXT DEFAULT NULL,
     active TINYINT(1) DEFAULT 1,
     date_created DATE
     );
