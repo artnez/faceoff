@@ -4,15 +4,14 @@ License: MIT, see LICENSE for details
 """
 
 from wtforms import Form, TextField, PasswordField
-from wtforms.validators import Required, Email, EqualTo
+from wtforms.validators import Required, EqualTo
 
 class LoginForm(Form):
-    email = TextField('Email Address', [Required(), Email()])
+    nickname = TextField('Nickname', [Required()])
     password = PasswordField('Password', [Required()])
 
 class JoinForm(Form):
-    nickname = TextField('Nickname', [Required(), Email()])
-    email = TextField('Email Address', [Required(), Email()])
+    nickname = TextField('Nickname', [Required()])
     password = PasswordField('Password', [Required(), EqualTo('confirm', message='Passwords must match')])
     confirm = PasswordField('Repeat Password')
 

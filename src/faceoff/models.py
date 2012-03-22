@@ -31,13 +31,12 @@ class CompanyModel(DataModel):
 
 class UserModel(DataModel):
 
-    def create(self, company_id, nickname, email, password):
+    def create(self, company_id, nickname, password):
         salt = self.generate_salt()
         password = sha1(password + salt).hexdigest()
         return self.insert(
             company_id = company_id, 
             nickname = nickname, 
-            email = email, 
             password = password, 
             salt = salt,
             date_created = int(time())

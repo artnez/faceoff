@@ -75,8 +75,7 @@ class Builder(object):
         for person in self.pick_data('people', minCount, maxCount):
             fname, lname = person['fname'].lower(), person['lname'].lower()
             nick = fname[0] + lname
-            email = '%s.%s@example.com' % (fname, lname)
-            yield {'nickname': nick, 'email': email, 'password': 'p!ngp0ng!'}
+            yield {'nickname': nick, 'password': 'p!ngp0ng!'}
 
     def pick_companies(self, minCount, maxCount):
         for company in self.pick_data('companies', minCount, maxCount):

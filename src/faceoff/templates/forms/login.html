@@ -1,7 +1,7 @@
 {% from 'macros/form.html' import render_field %}
 <form id='login' action='{{ url_for('.login') }}' method='post'>
     <fieldset>
-        {{ render_field(login_form.email, errpos='inline') }}
+        {{ render_field(login_form.nickname, errpos='inline') }}
         {{ render_field(login_form.password, errpos='inline') }}
         <button type='submit' class='btn btn-large btn-primary'>Login</button>
     </fieldset>

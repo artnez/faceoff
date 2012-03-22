@@ -19,13 +19,11 @@ CREATE TABLE user (
     id CHAR(32) PRIMARY KEY,
     company_id INTEGER,
     nickname VARCHAR(25),
-    email VARCHAR(255),
     password CHAR(40),
     salt CHAR(8),
     date_created DATE
     );
-CREATE UNIQUE INDEX idx_user_unique ON user (company_id, email);
-CREATE INDEX idx_user_search_nickname ON user (company_id, nickname);
+CREATE UNIQUE INDEX idx_user_unique ON user (company_id, nickname);
 CREATE INDEX idx_user_search_latest ON user (company_id, date_created);
 
 CREATE TABLE league (
