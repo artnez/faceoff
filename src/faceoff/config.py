@@ -11,6 +11,7 @@ import os
 LOGGER_NAME = 'faceoff'
 DEBUG = os.getenv('FACEOFF_DEBUG') == '1' 
 SERVER_NAME = 'faceoff.dev:5000'
+SECRET_KEY = os.urandom(24)
 
 # logging
 LOG_LEVEL = os.getenv('FACEOFF_LOG_LEVEL')
