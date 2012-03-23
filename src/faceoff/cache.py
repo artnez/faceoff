@@ -7,7 +7,7 @@ from werkzeug.contrib.cache import NullCache, MemcachedCache
 
 def init_app(app):
     """
-    Configures the provided app object's cache layer.
+    Configures the provided app cache services.
     """
     servers = app.config['MEMCACHED_SERVERS']
     servers = filter(None, servers.split(',') if servers is str else servers)

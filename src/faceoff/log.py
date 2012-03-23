@@ -7,7 +7,7 @@ from logging import FileHandler, StreamHandler, Filter, Formatter, getLogger
 
 def init_app(app, name=''):
     """
-    Configures the provided app object's logger.
+    Configures the provided app's logger.
     
     :param app: the application object to configure the logger
     :param name: the name of the logger to create and configure
@@ -38,6 +38,7 @@ class MultiNameFilter(Filter):
     def __init__(self, allow, deny):
         self.allow = self.format_list(allow)
         self.deny = self.format_list(deny)
+        super(MultiNameFilter, self).__init__()
 
     def filter(self, record):
         return (not self.allow or record.name in self.allow) and \

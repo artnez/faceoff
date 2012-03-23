@@ -20,36 +20,30 @@ class DataModel(Table):
         name = re.sub(r'([A-Z])', '_\\1', name)
         return name.strip('_').lower()
 
-class CompanyModel(DataModel):
-    
-    def create(self, name, subdomain):
-        return self.insert(
-            name = name, 
-            subdomain = subdomain, 
-            date_created = int(time())
-            )
-
 class UserModel(DataModel):
 
-    def create(self, company_id, nickname, password):
+    def create(self, nickname, password):
         salt = self.generate_salt()
         password = sha1(password + salt).hexdigest()
         return self.insert(
-            company_id = company_id, 
             nickname = nickname, 
             password = password, 
             salt = salt,
             date_created = int(time())
             )
 
-    def authenticate(self, company_id, nickname, password):
-        user = self.find(company_id=company_id, nickname=nickname)
+    def authenticate(self, session, nickname, password):
+        user = self.find(nickname=nickname)
         if user is None:
-            return None
+            return False
         password = sha1(password + user['salt']).hexdigest()
         if password != user['password']:
-            return None
-        return user['id']
+            return False
+        session['user_id'] = user['id'] 
+        return True
+
+    def logout(self, session):
+        session.pop('user_id')
 
     def generate_salt(self):
         pool = string.ascii_letters + string.digits
@@ -57,12 +51,10 @@ class UserModel(DataModel):
 
 class LeagueModel(DataModel):
 
-    def create(self, company_id, name, description=None, active=True):
+    def create(self, name, description=None, active=True):
         return self.insert(
-            company_id = company_id,
             name = name,
             description = description,
             active = '1' if active else '0',
             date_created = int(time())
             )
-

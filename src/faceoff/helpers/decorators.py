@@ -21,7 +21,7 @@ def templated(template_name=None):
             elif not isinstance(response, dict):
                 return response
             if template is None:
-                template = 'pages/%s.html' % request.endpoint
+                template = '%s.html' % request.endpoint
             return render_template(template, **response)
         return decorator
     return closure

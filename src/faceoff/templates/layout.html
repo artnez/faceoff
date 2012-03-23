@@ -7,14 +7,16 @@
     <meta name='author' content='Artem Nezvigin, artem@artnez.com'>
     <meta charset='utf-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <link rel='stylesheet' media='screen' href='{{ url_for('public.static', filename='css/bootstrap.css') }}'>
+    <link rel='stylesheet' media='screen' href='{{ url_for('static', filename='css/bootstrap.css') }}'>
+    <link rel='stylesheet' media='screen' href='{{ url_for('static', filename='css/faceoff.css') }}'>
     {%- block stylesheet %}{% endblock %}
-    <script src='{{ url_for('public.static', filename='js/jquery.js') }}'></script>
-    <script src='{{ url_for('public.static', filename='js/bootstrap.js') }}'></script>
+    <script src='{{ url_for('static', filename='js/jquery.js') }}'></script>
+    <script src='{{ url_for('static', filename='js/bootstrap.js') }}'></script>
+    <script src='{{ url_for('static', filename='js/faceoff.js') }}'></script>
     {%- block javascript %}{% endblock %}
 </head>
 <body {{ page_id() }} {{ page_class() }}>
-{% block body %}{% endblock %}
+{%- block body %}{% endblock -%}
 </body>
 </html>
 

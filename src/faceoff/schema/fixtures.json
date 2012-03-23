@@ -1,19 +1,19 @@
 {
     "companies": [
-        {"name": "Aperture Science", "subdomain": "aperture"},
-        {"name": "BiffCo Enterprises", "subdomain": "biffco"},
-        {"name": "Bluth Company","subdomain": "bluth"},
-        {"name": "Dunder Mifflin", "subdomain": "dunder"},
-        {"name": "Globo Gym","subdomain": "globo"},
-        {"name": "InGen","subdomain": "ingen"},
-        {"name": "Kramerica","subdomain": "kramerica"},
-        {"name": "Oceanic Airlines","subdomain": "oceanicair"},
-        {"name": "Omni Consumer Products","subdomain": "omni"},
-        {"name": "Oscorp Industries","subdomain": "oscorp"},
-        {"name": "Rekall Incorporated","subdomain": "rekall-inc"},
-        {"name": "Sterling Cooper Draper Pryce","subdomain": "scdp"},
-        {"name": "Tyrell Corporation","subdomain": "tyrell"},
-        {"name": "Umbrella Corporation","subdomain": "umbrella"}
+        {"name": "Aperture Science"},
+        {"name": "BiffCo Enterprises"},
+        {"name": "Bluth Company"},
+        {"name": "Dunder Mifflin"},
+        {"name": "Globo Gym"},
+        {"name": "InGen"},
+        {"name": "Kramerica"},
+        {"name": "Oceanic Airlines"},
+        {"name": "Omni Consumer Products"},
+        {"name": "Oscorp Industries"},
+        {"name": "Rekall Incorporated"},
+        {"name": "Sterling Cooper Draper Pryce"},
+        {"name": "Tyrell Corporation"},
+        {"name": "Umbrella Corporation"}
     ],
     "people": [
         {"fname": "Wayne", "lname": "Gretzky"},
