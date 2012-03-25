@@ -37,4 +37,3 @@ def authenticated(f):
             return redirect(url_for('gate'))
         return f(*args, **kwargs)
     return decorator
-

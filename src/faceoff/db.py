@@ -293,4 +293,3 @@ class Table(object):
         name that comes from an untrusted source).
         """
         return re.sub(r'[^\w]', '', string)
-

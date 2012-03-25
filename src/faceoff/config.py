@@ -29,4 +29,3 @@ DB_FIXTURES = os.getenv('FACEOFF_DB_FIXTURES')
 def init_app(app):
     app.config.from_object(__name__)
     app.config.from_envvar('FACEOFF_CONFIG', silent=True)
-

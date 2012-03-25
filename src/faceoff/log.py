@@ -46,4 +46,3 @@ class MultiNameFilter(Filter):
     
     def format_list(self, value):
         return value.split(',') if value is str else (value or [])
-

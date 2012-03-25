@@ -12,4 +12,3 @@ def init_app(app):
     servers = app.config['MEMCACHED_SERVERS']
     servers = filter(None, servers.split(',') if servers is str else servers)
     app.cache = MemcachedCache(servers) if servers else NullCache()
-
