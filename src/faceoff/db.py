@@ -21,6 +21,7 @@ from functools import wraps
 
 _curdir = os.path.dirname(__file__)
 _schema = os.path.join(_curdir, 'schema')
+_global_factory = None
 
 def init_app(app):
     """
@@ -34,6 +35,7 @@ def init_app(app):
     elif not os.path.exists(db_path):
         db_path = make_new_db(db_path)
     app.db = Factory(db_path)
+    set_global_factory(app.db)
 
 def make_temp_db():
     """ 
@@ -109,25 +111,40 @@ def use_db(f):
     @wraps(f)
     def decorator(*args, **kwargs):
         if kwargs.has_key('db'):
-            db = get_conn(kwargs['db'])
+            db = get_connection(kwargs['db'])
             del kwargs['db']
         else:
-            db = get_conn()
+            db = get_connection()
         return f(db, *args, **kwargs)
     return decorator
 
-def get_conn(conn=None):
+def get_connection(conn=None):
     """
     Attempts to load a database connection object. If a valid connection object 
     is provided explicitly, it is used. If not, an attempt is made to load the
     connection from the flask global registry.
     """
-    from flask import g 
     if conn:
         return conn
-    if g.db:
-        return g.db
-    raise RuntimeError('Database connection object can\'t resolved globally.')
+    from flask import g 
+    if not hasattr(g, 'db'):
+        g.db = get_global_factory().connect()
+    return g.db
+
+def get_global_factory():
+    """
+    Returns the global connection factory. Use `set_global_factory` to set this
+    value at some point when the application initializes.
+    """
+    return _global_factory
+
+def set_global_factory(factory):
+    """
+    Sets the global database connection factory. This factory is used to create
+    new database connections on demand.
+    """
+    global _global_factory
+    _global_factory = factory
 
 class Factory(object):
     """ 
@@ -147,39 +164,6 @@ class Factory(object):
 
     def default_options(self):
         return {'isolation_level': None}
-
-class Cursor(sqlite3.Cursor):
-    """
-    Wraps the native database cursor object to provide logging ability.
-    """
-
-    def execute(self, sql, *args, **kwargs):
-        self._log('execute: %s' % sql)
-        return sqlite3.Cursor.execute(self, sql, *args, **kwargs)
-
-    def executemany(self, sql, *args):
-        self._log('executemany: %s' % sql)
-        return sqlite3.Cursor.executemany(self, sql, *args)
-
-    def executescript(self, sql):
-        self._log('executescript: %s' % sql)
-        return sqlite3.Cursor.executescript(self, sql)
-
-    def fetchone(self):
-        self._log('fetchone')
-        return sqlite3.Cursor.fetchone(self)
-
-    def fetchmany(self, *args, **kwargs):
-        self._log('fetchmany')
-        return sqlite3.Cursor.fetchmany(self, *args, **kwargs)
-
-    def fetchall(self):
-        self._log('fetchall')
-        return sqlite3.Cursor.fetchall(self)
-
-    def _log(self, *args, **kwargs):
-        """ Proxy all logs to the connection logger. """
-        self.connection._log(*args, **kwargs) # pylint: disable=E1101
 
 class Connection(sqlite3.Connection):
     """
@@ -306,3 +290,36 @@ class Connection(sqlite3.Connection):
     def _log(self, message, level='debug'):
         message = '[%s] %s' % (self.ident, message)
         getattr(logger('db.query'), level)(message)
+
+class Cursor(sqlite3.Cursor):
+    """
+    Wraps the native database cursor object to provide logging ability.
+    """
+
+    def execute(self, sql, *args, **kwargs):
+        self._log('execute: %s' % sql)
+        return sqlite3.Cursor.execute(self, sql, *args, **kwargs)
+
+    def executemany(self, sql, *args):
+        self._log('executemany: %s' % sql)
+        return sqlite3.Cursor.executemany(self, sql, *args)
+
+    def executescript(self, sql):
+        self._log('executescript: %s' % sql)
+        return sqlite3.Cursor.executescript(self, sql)
+
+    def fetchone(self):
+        self._log('fetchone')
+        return sqlite3.Cursor.fetchone(self)
+
+    def fetchmany(self, *args, **kwargs):
+        self._log('fetchmany')
+        return sqlite3.Cursor.fetchmany(self, *args, **kwargs)
+
+    def fetchall(self):
+        self._log('fetchall')
+        return sqlite3.Cursor.fetchall(self)
+
+    def _log(self, *args, **kwargs):
+        """ Proxy all logs to the connection logger. """
+        self.connection._log(*args, **kwargs) # pylint: disable=E1101

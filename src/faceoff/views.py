@@ -9,13 +9,10 @@ from faceoff.forms import LoginForm, JoinForm
 from faceoff.helpers.decorators import templated, authenticated
 from faceoff.models.user import find_user, create_user, auth_login, auth_logout
 
-@app.before_request
-def db_open():
-    g.db = app.db.connect()
-
 @app.teardown_request
 def db_close(exception): # pylint:disable=W0613
-    g.db.close()
+    if hasattr(g, 'db'):
+        g.db.close()
 
 @app.route('/')
 @templated()
