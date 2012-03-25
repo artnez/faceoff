@@ -7,17 +7,19 @@ from flask import Flask, g, request, abort, redirect, url_for, session
 from faceoff import app
 from faceoff.models import UserModel
 from faceoff.forms import LoginForm, JoinForm
-from faceoff.helpers.decorators import templated
+from faceoff.helpers.decorators import templated, authenticated
 
 @app.before_request
-def before_request():
+def db_open():
     g.db = app.db.connect()
-    g.user = UserModel(g.db).find(id=session.get('user_id'))
-    if g.user is None and request.endpoint not in ['gate', 'login', 'join']:
-        return redirect(url_for('gate'))
+
+@app.teardown_request
+def db_close(exception): # pylint:disable=W0613
+    g.db.close()
 
 @app.route('/')
 @templated()
+@authenticated
 def home():
     pass
 
@@ -48,15 +50,11 @@ def join():
     form = JoinForm(request.form)
     if request.method != 'POST' or not form.validate():
         return dict(join_form=form)
-
     user_model = UserModel(g.db)
-    nickname = form.nickname.data
-    password = form.password.data
-
-    user = user_model.find(nickname=nickname)
+    user = user_model.find(nickname=form.nickname.data)
     if user is not None:
         return redirect(url_for('join', dup=1))
     else:
-        user_id = user_model.create(nickname, password)
+        user_id = user_model.create(form.nickname.data, form.password.data)
         session['user_id'] = user_id
         return redirect(url_for('home'))

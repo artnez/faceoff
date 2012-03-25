@@ -4,7 +4,7 @@ License: MIT, see LICENSE for details
 """
 
 from functools import wraps
-from flask import request, render_template
+from flask import g, request, session, render_template, url_for, redirect
 
 def templated(template_name=None):
     """
@@ -25,4 +25,16 @@ def templated(template_name=None):
             return render_template(template, **response)
         return decorator
     return closure
+
+def authenticated(f):
+    """
+    Asserts that an existing logged-in user session is active. If not, redirects
+    to the authenticate gate.
+    """
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        if session.get('user_id') is None:
+            return redirect(url_for('gate'))
+        return f(*args, **kwargs)
+    return decorator
 
