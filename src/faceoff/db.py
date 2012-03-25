@@ -19,7 +19,7 @@ from time import time
 from natsort import natsort
 
 _curdir = os.path.dirname(__file__)
-_schema = os.path.join(_curdir, 'schema', 'versions')
+_schema = os.path.join(_curdir, 'schema')
 
 def init_app(app):
     """

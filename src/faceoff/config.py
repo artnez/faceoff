@@ -24,6 +24,7 @@ MEMCACHED_SERVERS = 'localhost:1121'
 
 # database
 DB_PATH = os.getenv('FACEOFF_DB_PATH')
+DB_FIXTURES = os.getenv('FACEOFF_DB_FIXTURES')
 
 def init_app(app):
     app.config.from_object(__name__)

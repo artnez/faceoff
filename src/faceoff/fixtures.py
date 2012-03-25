@@ -12,85 +12,127 @@ from jinja2.utils import generate_lorem_ipsum
 import json
 from faceoff.models import UserModel, LeagueModel
 
-_curdir = os.path.dirname(__file__)
-_fixtures = os.path.join(_curdir, 'schema', 'fixtures.json')
 _logger = None
 
+HUMAN_NAMES = [
+    ['Wayne','Gretzky'], ['Bobby','Orr'], ['Gordie','Howe'], 
+    ['Mario','Lemieux'],['Maurice','Richard'], ['Doug','Harvey'], 
+    ['Jean','Beliveau'],['Bobby','Hull'], ['Terry','Sawchuk'], 
+    ['Eddie','Shore'], ['Guy','Lafleur'], ['Mark','Messier'], 
+    ['Jacques','Plante'], ['Ray','Bourque'],['Howie','Morenz'], 
+    ['Glenn','Hall'], ['Stan','Mikita'], ['Phil','Esposito'],['Denis','Potvin'], 
+    ['Mike','Bossy'], ['Ted','Lindsay'], ['Patrick','Roy'],['Red','Kelly'], 
+    ['Bobby','Clarke'], ['Larry','Robinson'], ['Ken','Dryden'],
+    ['Frank','Mahovlich'], ['Milt','Schmidt'], ['Paul','Coffey'],
+    ['Henri','Richard'], ['Bryan','Trottier'], ['Dickie','Moore'],
+    ['Newsy','Lalonde'], ['Syl','Apps'], ['Bill','Durnan'], 
+    ['Charlie','Conacher'],['Jaromir','Jagr'], ['Marcel','Dionne'], 
+    ['Joe','Malone'], ['Chris','Chelios'],['Dit','Clapper'], 
+    ['Bernie','Geoffrion'], ['Tim','Horton'], ['Bill','Cook'],
+    ['Johnny','Bucyk'], ['George','Hainsworth'], ['Gilbert','Perreault'],
+    ['Max','Bentley'], ['Brad','Park'], ['Jari','Kurri']
+    ]
+
+GAME_NAMES = [
+    'Table Tennis', 'Chess', 'Thumb Wrestling', 'Foosball', 'Boxing', 
+    'Checkers', 'Scrabble', 'Poker'
+    ]
+
+COMPANY_NAMES = [
+    ["Aperture Science"], ["BiffCo Enterprises"],["Bluth Company"],
+    ["Dunder Mifflin"], ["Globo Gym"],["InGen"],["Kramerica"],
+    ["Oceanic Airlines"], ["Omni Consumer Products"],["Oscorp Industries"],
+    ["Rekall Incorporated"], ["Sterling Cooper Draper Pryce"],
+    ["Tyrell Corporation"], ["Umbrella Corporation"]
+    ]
+
 def init_app(app):
-    if app.debug and not os.getenv('WERKZEUG_RUN_MAIN'):
-        pass
-        #builder = Builder(app.db.connect())
-        #builder.build_all()
+    """
+    Generates fixtures configured from the state of an app object.
+    """
+    if app.config['DB_FIXTURES'] and not os.getenv('WERKZEUG_RUN_MAIN'):
+        generate_full_db(app.db.connect(), truncate=True)
+
+def generate_full_db(db, truncate=False):
+    """
+    Generates a complete database of data. Requires a valid database connection 
+    object. If truncate is set to True, all existing data will be removed.
+    """
+    logger().info('generating full db')
+    db.execute('begin')
+    generate_users(db, truncate=truncate)
+    generate_leagues(db, truncate=truncate)
+    db.commit()
+
+def generate_users(db, min_count=5, max_count=20, truncate=False):
+    """
+    Generates a random amount of users into the given database connection
+    object. The amount of users will fall between `min_count` and `max_count`. 
+    If `truncate` is True, all existing users will be deleted.
+    """
+    logger().info('creating users')
+    user_model = UserModel(db)
+    if truncate:
+        user_model.truncate()
+    users = []
+    for user in rand_users(min_count, max_count):
+        users.append(user_model.create(**user))
+    logger().info('created %d users (%s)' % (len(users), ','.join(users)))
+    return users
+
+def generate_leagues(db, min_count=2, max_count=5, truncate=False):
+    """
+    Generates a random amount of leagues into the given database connection
+    object. The amount of leagues will fall between `min_count` and `max_count`. 
+    If `truncate` is True, all existing leagues will be deleted.
+    """
+    logger().info('creating leagues')
+    league_model = LeagueModel(db)
+    if truncate:
+        league_model.truncate()
+    leagues = []
+    for league in rand_leagues(min_count, max_count):
+        leagues.append(league_model.create(**league))
+    logger().info('created %d leagues (%s)' % (len(leagues), ','.join(leagues)))
+    return leagues
+
+def rand_users(min_count=3, max_count=10):
+    """
+    Returns a list of random objects that map the properties of a user record.
+    """
+    names = HUMAN_NAMES
+    shuffle(names)
+    count = randint(min_count, max_count)
+    names.insert(0, ['a', 'rtnez'])
+    for n in range(count):
+        nickname = names[n][0].lower() + names[n][1].lower()
+        rank = 'admin' if n < 2 else 'member'
+        yield {'nickname': nickname, 'password': 'faceoff!', 'rank': rank}
+
+def rand_leagues(min_count=2, max_count=5):
+    """
+    Returns a list of random objects that map the properties of a league record.
+    """
+    games = GAME_NAMES
+    shuffle(games)
+    count = randint(min_count, max_count)
+    for n in range(count):
+        name = games[n]
+        desc = rand_text(1, 3)
+        active = True if randint(0, 3) else False
+        yield {'name': name, 'desc': desc, 'active': active}
+
+def rand_text(min_count, max_count):
+    """
+    Returns randomly generated text with the given paragraph count.
+    """
+    return generate_lorem_ipsum(n=randint(min_count, max_count), html=False)
 
 def logger():
+    """
+    Returns a global logger object used for debugging.
+    """
     global _logger
     if _logger is None:
         _logger = getLogger('fixtures')
     return _logger
-
-"""
-class Builder(object):
-
-    def __init__(self, db):
-        self.db = db
-        self.user = UserModel(db)
-        self.league = LeagueModel(db)
-        self.data = self.load_data()
-
-    def build_all(self):
-        logger().info('building fixtures: all')
-        self.db.execute('begin')
-        self.truncate()
-        self.build_users()
-        self.build_leagues()
-        self.db.commit()
-
-    def build_users(self, minCount=3, maxCount=10):
-        logger().info('building fixtures: users')
-        self.user.create(
-            nickname='artnez',
-            password='faceoff!'
-            )
-        for user in self.pick_users(minCount, maxCount):
-            self.user.create(**user)
-
-    def build_leagues(self, minCount=1, maxCount=5):
-        logger().info('building fixtures: leagues')
-        for league in self.pick_leagues(minCount, maxCount):
-            self.league.create(**league)
-
-    def pick_users(self, minCount, maxCount):
-        for person in self.pick_data('people', minCount, maxCount):
-            fname, lname = person['fname'].lower(), person['lname'].lower()
-            nick = fname[0] + lname
-            yield {'nickname': nick, 'password': 'p!ngp0ng!'}
-
-    def pick_companies(self, minCount, maxCount):
-        for company in self.pick_data('companies', minCount, maxCount):
-            yield company
-
-    def pick_leagues(self, minCount, maxCount):
-        for game in self.pick_data('games', minCount, maxCount):
-            name = game['name']
-            description = self.pick_text(1, 3)
-            active = True if randint(0, 3) else False
-            yield {'name': name, 'description': description, 'active': active}
-
-    def pick_text(self, minCount, maxCount):
-        return generate_lorem_ipsum(n=randint(minCount, maxCount), html=False)
-
-    def pick_data(self, source, minCount, maxCount):
-        return [self.data[source][n] for n in range(randint(minCount, maxCount))]
-
-    def load_data(self):
-        with open(os.path.join(_fixtures)) as f:
-            fixtures = json.loads(f.read())
-        for category in fixtures:
-            shuffle(fixtures[category])
-        return fixtures
-
-    def truncate(self):
-        models = ['company', 'user', 'league']
-        [getattr(self, model).truncate() for model in models]
-"""
-

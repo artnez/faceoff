@@ -22,17 +22,22 @@ class DataModel(Table):
 
 class UserModel(DataModel):
 
-    def create(self, nickname, password):
+    RANK_MEMBER = 'member'
+    RANK_ADMIN = 'admin'
+
+    def create(self, nickname, password, rank=None):
         salt = self.generate_salt()
         password = sha1(password + salt).hexdigest()
+        rank = rank if rank in [self.RANK_MEMBER, self.RANK_ADMIN] else 'member'
         return self.insert(
             nickname = nickname, 
             password = password, 
             salt = salt,
+            rank = rank,
             date_created = int(time())
             )
 
-    def authenticate(self, session, nickname, password):
+    def login(self, session, nickname, password):
         user = self.find(nickname=nickname)
         if user is None:
             return False
@@ -51,10 +56,10 @@ class UserModel(DataModel):
 
 class LeagueModel(DataModel):
 
-    def create(self, name, description=None, active=True):
+    def create(self, name, desc=None, active=True):
         return self.insert(
             name = name,
-            description = description,
+            desc = desc,
             active = '1' if active else '0',
             date_created = int(time())
             )
