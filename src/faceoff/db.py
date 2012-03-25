@@ -17,6 +17,7 @@ from hashlib import sha1
 from random import random
 from time import time
 from natsort import natsort
+from functools import wraps
 
 _curdir = os.path.dirname(__file__)
 _schema = os.path.join(_curdir, 'schema')
@@ -100,6 +101,34 @@ def logger(name='db.general'):
     """
     return getLogger(name)
 
+def use_db(f):
+    """
+    Decorator that wraps functions and inserts a global database object as first
+    parameter.
+    """
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        if kwargs.has_key('db'):
+            db = get_conn(kwargs['db'])
+            del kwargs['db']
+        else:
+            db = get_conn()
+        return f(db, *args, **kwargs)
+    return decorator
+
+def get_conn(conn=None):
+    """
+    Attempts to load a database connection object. If a valid connection object 
+    is provided explicitly, it is used. If not, an attempt is made to load the
+    connection from the flask global registry.
+    """
+    from flask import g 
+    if conn:
+        return conn
+    if g.db:
+        return g.db
+    raise RuntimeError('Database connection object can\'t resolved globally.')
+
 class Factory(object):
     """ 
     Database connection factory. Stores database configuration settings and
@@ -154,13 +183,101 @@ class Cursor(sqlite3.Cursor):
 
 class Connection(sqlite3.Connection):
     """
-    Wraps the native database connection object to provide logging ability.
+    Wraps the native database connection object to provide logging ability as 
+    well as some helper functions to make querying more concise.
     """
 
     def __init__(self, *args, **kwargs):
         self.ident = self._ident(args[0])
         self._log('connect %s' % args[0])
         sqlite3.Connection.__init__(self, *args, **kwargs)
+
+    def find(self, table, pk=None, sort=None, order=None, **where):
+        """ 
+        Searches `table` for the given criteria and returns the first available 
+        record. If no records found, None is returned.
+        """
+        if pk: 
+            where['id'] = pk
+        rows = self.search(table, sort=sort, order=order, limit=1, **where)
+        return rows[0] if rows else None
+
+    def search(self, table, sort=None, order=None, limit=None, **where):
+        """ 
+        Searches `table` for the given criteria and returns all matching 
+        records. If no records found, an empty list is returned.
+        """
+        query = 'SELECT * FROM "%s"' % self.clean(table)
+        param = []
+        if len(where):
+            fields = ['"%s"=?' % self.clean(name) for name in where.keys()]
+            query += ' WHERE ' + ' AND '.join(fields)
+            param.extend(where.values())
+        if sort is not None:
+            sort = self.clean(sort)
+            if order != 'asc': 
+                order = 'desc'
+            query += ' ORDER BY "%s" %s' % (sort, order)
+        if limit is not None:
+            query += ' LIMIT %d ' % int(limit)
+        c = self.execute(query, param)
+        rows = []
+        [rows.append(dict(zip(row.keys(), row))) for row in c.fetchall()]
+        c.close()
+        return rows
+
+    def insert(self, table, pk=None, **fields):
+        """ 
+        Creates a record with primary key `pk` in `table` with the given data.
+        If no `pk` is specified, it is uniquely generated.
+        """
+        fields['id'] = pk or self.generate_pk(table)
+        query = 'INSERT INTO "%(table)s" ("%(names)s") VALUES (%(param)s)' % {
+            'table': self.clean(table),
+            'names': '","'.join(map(self.clean, fields.keys())),
+            'param': ','.join(['?'] * len(fields))
+            }
+        self.execute(query, fields.values())
+        return fields['id']
+
+    def update(self, table, pk, **fields):
+        """ 
+        Updates a record with primary key `pk` in `table` with the given data.
+        """
+        if not len(fields): 
+            return
+        query = 'UPDATE "%(table)s" SET %(pairs)s WHERE "id"=?' % {
+            'table': self.clean(table),
+            'pairs': ','.join(['"%s"=?' % self.clean(n) for n in fields.keys()])
+            }
+        self.execute(query, fields.values() + [pk])
+
+    def delete(self, table, pk):
+        """ 
+        Deletes a record by primary key `pk` on the given `table`.
+        """
+        self.execute('DELETE FROM "%s" WHERE "id"=?' % table, [pk])
+
+    def truncate_table(self, table):
+        """
+        Deletes all records in `table`.
+        """
+        self.execute('DELETE FROM "%s"' % table)
+
+    def generate_pk(self, table):
+        """
+        Returns a new primary key that is guaranteed to be unique. A version 5 
+        UUID is generated and returned as a 32 character hex string.
+        """
+        return uuid5(uuid4(), table).hex
+
+    def clean(self, string):
+        """
+        Enforces a strict naming convention to prevent SQL injection. This 
+        should be used when SQL identifiers (eg: table name, column name, etc) 
+        come from an untrusted source.
+        """
+        return re.sub(r'[^\w]', '', string)
 
     def cursor(self, cursorClass=None):
         return sqlite3.Connection.cursor(self, cursorClass or Cursor)
@@ -189,107 +306,3 @@ class Connection(sqlite3.Connection):
     def _log(self, message, level='debug'):
         message = '[%s] %s' % (self.ident, message)
         getattr(logger('db.query'), level)(message)
-
-class Table(object):
-    """
-    Helps in perform simple CRUD operations on the database.
-    """
-
-    def __init__(self, db, name):
-        self.db = db
-        self.name = name
-
-    def find(self, pk=None, sort=None, order=None, **where):
-        """ 
-        Searches the database for the given criteria and returns the first 
-        available record. If no records found, None is returned.
-        """
-        if pk: 
-            where['id'] = pk
-        rows = self.search(sort=sort, order=order, limit=1, **where)
-        return rows[0] if rows else None
-
-    def search(self, sort=None, order=None, limit=None, **where):
-        """ 
-        Searches the database for the given criteria and returns all matching
-        records. If no records found, an empty list is returned.
-        """
-        query = 'SELECT * FROM "%s"' % self.clean(self.name)
-        param = []
-        if len(where):
-            fields = ['"%s"=?' % self.clean(name) for name in where.keys()]
-            query += ' WHERE ' + ' AND '.join(fields)
-            param.extend(where.values())
-        if sort is not None:
-            sort = self.clean(sort)
-            if order != 'asc': 
-                order = 'desc'
-            query += ' ORDER BY "%s" %s' % (sort, order)
-        if limit is not None:
-            query += ' LIMIT %d ' % int(limit)
-        c = self.db.execute(query, param)
-        rows = []
-        [rows.append(dict(zip(row.keys(), row))) for row in c.fetchall()]
-        c.close()
-        return rows
-
-    def insert(self, pk=None, **fields):
-        """ 
-        Runs a SQL INSERT query on the given primary key and field. Returns 
-        the newly created primary key. This is a simple query generator and is 
-        not aware of the table schema. 
-        """
-        fields['id'] = pk or self.create_pk()
-        query = 'INSERT INTO "%(table)s" ("%(names)s") VALUES (%(param)s)' % {
-            'table': self.clean(self.name),
-            'names': '","'.join(map(self.clean, fields.keys())),
-            'param': ','.join(['?'] * len(fields))
-            }
-        self.query(query, fields.values())
-        return fields['id']
-
-    def update(self, pk, **fields):
-        """ 
-        Runs a SQL UPDATE query on the given primary key and field. This is
-        a simple query generator and is not aware of the table schema. 
-        """
-        if not len(fields): 
-            return
-        query = 'UPDATE "%(table)s" SET %(pairs)s WHERE "id"=?' % {
-            'table': self.clean(self.name),
-            'pairs': ','.join(['"%s"=?' % self.clean(n) for n in fields.keys()])
-            }
-        self.query(query, fields.values() + [pk])
-
-    def delete(self, pk):
-        """ 
-        Runs a SQL DELTE query on the given primary key. This is a simple query 
-        generator and is not aware of the table schema. 
-        """
-        self.query('DELETE FROM "%s" WHERE "id"=?' % self.name, [pk])
-
-    def truncate(self):
-        """
-        Efficiently deletes all records in the table.
-        """
-        self.query('DELETE FROM "%s"' % self.name)
-
-    def query(self, query, params=None):
-        if params is None:
-            params = {}
-        self.db.execute(query, params)
-
-    def create_pk(self):
-        """
-        Returns a new primary key that is guaranteed to be unique. A version 5 
-        UUID is generated and returned as a 32 character hex string.
-        """
-        return uuid5(uuid4(), self.name).hex
-
-    def clean(self, string):
-        """
-        Enforces a strict keyword naming convention to prevent SQL injection. 
-        This should be used when placeholders cannot (eg: a dynamic column 
-        name that comes from an untrusted source).
-        """
-        return re.sub(r'[^\w]', '', string)

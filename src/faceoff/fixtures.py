@@ -10,7 +10,8 @@ from logging import getLogger
 from random import choice, shuffle, randint
 from jinja2.utils import generate_lorem_ipsum
 import json
-from faceoff.models import UserModel, LeagueModel
+from faceoff.models.user import create_user
+from faceoff.models.league import create_league
 
 _logger = None
 
@@ -71,12 +72,11 @@ def generate_users(db, min_count=5, max_count=20, truncate=False):
     If `truncate` is True, all existing users will be deleted.
     """
     logger().info('creating users')
-    user_model = UserModel(db)
     if truncate:
-        user_model.truncate()
+        db.truncate_table('user')
     users = []
     for user in rand_users(min_count, max_count):
-        users.append(user_model.create(**user))
+        users.append(create_user(db=db, **user))
     logger().info('created %d users (%s)' % (len(users), ','.join(users)))
     return users
 
@@ -87,12 +87,11 @@ def generate_leagues(db, min_count=2, max_count=5, truncate=False):
     If `truncate` is True, all existing leagues will be deleted.
     """
     logger().info('creating leagues')
-    league_model = LeagueModel(db)
     if truncate:
-        league_model.truncate()
+        db.truncate_table('league')
     leagues = []
     for league in rand_leagues(min_count, max_count):
-        leagues.append(league_model.create(**league))
+        leagues.append(create_league(db=db, **league))
     logger().info('created %d leagues (%s)' % (len(leagues), ','.join(leagues)))
     return leagues
 
