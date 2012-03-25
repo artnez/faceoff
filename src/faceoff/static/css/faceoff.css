@@ -3,3 +3,24 @@
  * License: MIT, see LICENSE for details
  */
 
+/**
+ * Additional form styles.
+ */
+
+form .control-group .control-label span.description {
+    padding: 0 0 0 4px;
+}
+
+form .control-group .control-label span.description a {
+    padding: 0 1px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+/**
+ * Additional tooltip styles.
+ */
+
+.tooltip {
+    font-size: 12px;
+}

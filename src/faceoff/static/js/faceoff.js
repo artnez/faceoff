@@ -3,3 +3,7 @@
  * License: MIT, see LICENSE for details
  */
 
+$(function() {
+    // trigger bootstrap opt-in apis
+    $('a[rel=tooltip]').tooltip();
+});

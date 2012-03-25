@@ -1,0 +1,12 @@
+{% extends 'layouts/base.html' %}
+
+{% block stylesheet %}
+<link rel='stylesheet' media='screen' href='{{ url_for('static', filename='css/faceoff.gate.css') }}'>
+{% endblock %}
+
+{%- block body %}
+<div class='container'>
+    <header><h1><a href='{{ url_for('gate') }}'>faceoff</a></h1></header>
+    {%- block content %}{% endblock -%}
+</div>
+{% endblock -%}

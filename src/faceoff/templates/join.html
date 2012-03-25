@@ -1,13 +1,9 @@
-{% extends 'layouts.html' %}
+{% extends 'layouts/gate.html' %}
 
 {% set head_title='Join' %}
 
-{% block body %}
-<div class='row'>
-    <div class='span3 offset4'>
-        <h2>Join</h2>
-        {% include 'forms/join.html' %}
-    </div>
-</div>
+{% block content %}
+<h2>Join</h2>
+{% include 'forms/join.html' %}
 {% endblock %}
 

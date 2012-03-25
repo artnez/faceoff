@@ -1,14 +1,16 @@
 {% macro render_field(field, errpos='block') %}
 <div class='control-group{{ ' error' if field.errors | length }}'>
-    <label class='control-label' for='{{ field.id }}'>{{ field.label }}</label>
+    <label class='control-label' for='{{ field.id }}'>
+        {{ field.label.text }}
+        {%- if field.description -%}
+        <span class='description'>(<a class='#' rel='tooltip' title='{{ field.description }}'>?</a>)</span>
+        {%- endif -%}
+    </label>
     <div class='controls'>
         {{ field(**kwargs) | safe }}
         {%- if errpos == 'inline' and field.errors | length -%}
         <span class='help-inline'>{{ field.errors[0] }}</span>
         {%- endif -%} 
-        {%- if field.description -%}
-        <p class='help-block'>{{ field.description }}</p>
-        {%- endif -%}
         {%- if errpos == 'block' and field.errors | length -%}
         <p class='help-block'>{{ field.errors[0] }}</p>
         {%- endif %} 
