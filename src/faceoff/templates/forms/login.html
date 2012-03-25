@@ -1,6 +1,6 @@
 {% from 'macros/form.html' import render_field %}
 {% if request.args.fail %}
-<div class='alert alert-error'>Credentials no good.</div>
+<div class='alert alert-error'><strong>Those credentials no good!</strong></div>
 {% endif %}
 <form id='login' action='{{ url_for('.login') }}' method='post'>
     <fieldset>

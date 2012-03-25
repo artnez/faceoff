@@ -1,3 +1,11 @@
+{% extends 'layouts/base.html' %}
+
+{% block stylesheet %}
+<link rel='stylesheet' media='screen' href='{{ url_for('static', filename='css/faceoff.app.css') }}'>
+{% endblock %}
+
 {%- block body %}
-{%- block content %}{% endblock -%}
+<div class='container'>
+    {%- block content %}{% endblock -%}
+</div>
 {% endblock -%}

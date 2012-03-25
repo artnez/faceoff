@@ -22,4 +22,4 @@ class JoinForm(Form):
         EqualTo('confirm', message='Passwords must match')
         ])
     confirm = PasswordField('Repeat Password')
-    access_code = TextField('Access Code', description='Someone should have given you this.')
+    access_code = TextField('Access Code', description='Someone should have given you the code. If not, try buying them a beer.')
