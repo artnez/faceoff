@@ -14,6 +14,7 @@ Requirements
   - [werkzeug 0.8](http://werkzeug.pocoo.org/)
   - [wtforms 0.6](http://wtforms.simplecodes.com/)
   - [scipy 0.10](http://www.scipy.org/)
+  - [python-memcached 1.48](http://www.tummy.com/Community/software/python-memcached/)
 
 ### Others
 

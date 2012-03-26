@@ -10,5 +10,5 @@ def init_app(app):
     Configures the provided app cache services.
     """
     servers = app.config['MEMCACHED_SERVERS']
-    servers = filter(None, servers.split(',') if servers is str else servers)
+    servers = filter(None, [servers.split(',') if servers is str else servers])
     app.cache = MemcachedCache(servers) if servers else NullCache()
