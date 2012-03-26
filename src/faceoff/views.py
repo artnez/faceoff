@@ -8,6 +8,7 @@ from faceoff import app
 from faceoff.forms import LoginForm, JoinForm
 from faceoff.helpers.decorators import templated, authenticated
 from faceoff.models.user import find_user, create_user, auth_login, auth_logout
+from faceoff.models.settings import get_setting
 
 @app.teardown_request
 def db_close(exception): # pylint:disable=W0613
