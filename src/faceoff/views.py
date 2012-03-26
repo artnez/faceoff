@@ -24,7 +24,8 @@ def home():
 @app.route('/gate')
 @templated()
 def gate():
-    return dict(login_form=LoginForm(), join_form=JoinForm())
+    return dict(login_form=LoginForm(), 
+                join_form=JoinForm(access_code=get_setting('access_code')))
 
 @app.route('/login', methods=['GET', 'POST'])
 @templated()
@@ -45,7 +46,7 @@ def logout():
 @app.route('/join', methods=['GET', 'POST'])
 @templated()
 def join():
-    form = JoinForm(request.form)
+    form = JoinForm(request.form, access_code=get_setting('access_code'))
     if request.method != 'POST' or not form.validate():
         return dict(join_form=form)
     else:
