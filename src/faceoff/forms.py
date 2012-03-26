@@ -5,6 +5,7 @@ License: MIT, see LICENSE for details
 
 from wtforms import Form, TextField, PasswordField
 from wtforms.validators import Required, Length, Regexp, EqualTo
+from faceoff.helpers.validators import UniqueNickname
 
 class LoginForm(Form):
     nickname = TextField('Nickname', [Required()])
@@ -14,12 +15,13 @@ class JoinForm(Form):
     nickname = TextField('Nickname', [
         Required(), 
         Length(2, 20), 
-        Regexp(r'^[a-zA-Z0-9_]+$', message='Only numbers, letters, and underscores allowed.')
+        Regexp(r'^[a-zA-Z0-9_]+$', message='only numbers, letters, and underscores allowed.'),
+        UniqueNickname()
         ])
     password = PasswordField('Password', [
         Required(), 
         Length(4, message='Must be at least 4 characters'), 
-        EqualTo('confirm', message='Passwords must match')
+        EqualTo('confirm', message='passwords must match')
         ])
     confirm = PasswordField('Repeat Password')
     access_code = TextField('Access Code', description='Someone should have given you the code. If not, try buying them a beer.')

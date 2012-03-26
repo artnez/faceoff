@@ -47,9 +47,6 @@ def join():
     form = JoinForm(request.form)
     if request.method != 'POST' or not form.validate():
         return dict(join_form=form)
-    user = find_user(nickname=form.nickname.data)
-    if user is not None:
-        return redirect(url_for('join', dup=1))
     else:
         user_id = create_user(form.nickname.data, form.password.data)
         session['user_id'] = user_id

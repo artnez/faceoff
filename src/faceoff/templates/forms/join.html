@@ -1,7 +1,4 @@
 {% from 'macros/form.html' import render_field %}
-{% if request.args.dup %}
-<div class='alert alert-error'>Nickname is already in use.</div>
-{% endif %}
 <form id='join' action='{{ url_for('.join') }}' method='post'>
     <fieldset>
         {{ render_field(join_form.nickname, errpos='inline') }}
