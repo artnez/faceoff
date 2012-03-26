@@ -108,6 +108,8 @@ def use_db(f):
     Decorator that wraps functions and inserts a global database object as first
     parameter.
     """
+    varnames = f.func_code.co_varnames
+    has_self = len(varnames) > 0 and varnames[0] == 'self'
     @wraps(f)
     def decorator(*args, **kwargs):
         if kwargs.has_key('db'):
@@ -115,7 +117,11 @@ def use_db(f):
             del kwargs['db']
         else:
             db = get_connection()
-        return f(db, *args, **kwargs)
+        if has_self:
+            args = (args[0], db) + args[1:]
+        else:
+            args = (db,) + args
+        return f(*args, **kwargs)
     return decorator
 
 def get_connection(conn=None):
