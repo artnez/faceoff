@@ -18,7 +18,6 @@ Requirements
 ### Others
 
   - [memcached 1.4](http://memcached.org/)
-  - [less 1.2](http://lesscss.org/)
   - Web server that supports [WSGI](http://www.wsgi.org/) 
 
 Copyright
