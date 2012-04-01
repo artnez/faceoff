@@ -12,6 +12,7 @@ from jinja2.utils import generate_lorem_ipsum
 import json
 from faceoff.models.user import create_user
 from faceoff.models.league import create_league
+from faceoff.models.settings import set_setting
 
 _logger = None
 
@@ -63,6 +64,7 @@ def generate_full_db(db, truncate=False):
     db.execute('begin')
     generate_users(db, truncate=truncate)
     generate_leagues(db, truncate=truncate)
+    generate_settings(db)
     db.commit()
 
 def generate_users(db, min_count=5, max_count=20, truncate=False):
@@ -94,6 +96,12 @@ def generate_leagues(db, min_count=2, max_count=5, truncate=False):
         leagues.append(create_league(db=db, **league))
     logger().info('created %d leagues (%s)' % (len(leagues), ','.join(leagues)))
     return leagues
+
+def generate_settings(db):
+    """
+    Generates default application settings.
+    """
+    set_setting('access_code', 'letmeplay', db=db)
 
 def rand_users(min_count=3, max_count=10):
     """
