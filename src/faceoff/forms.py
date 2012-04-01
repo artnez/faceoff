@@ -20,7 +20,8 @@ class JoinForm(Form):
     nickname = TextField('Nickname', [
         Required(), 
         Length(2, 20), 
-        Regexp(r'^[a-zA-Z0-9_]+$', message='only numbers, letters, and underscores allowed.'),
+        Regexp(r'^[a-zA-Z0-9_]+$', message='only numbers, letters, and '
+                                           'underscores allowed.'),
         UniqueNickname()
         ])
     password = PasswordField('Password', [
@@ -30,7 +31,8 @@ class JoinForm(Form):
         ])
     confirm = PasswordField('Repeat Password')
     access_code = PasswordField('Access Code', [Required()],
-        description='Someone should have given you the code.'
+        description='Someone should have given you the code. If not, buy them '
+                    'a beer.'
         )
 
     def __init__(self, *args, **kwargs):
