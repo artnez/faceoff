@@ -7,6 +7,10 @@ from time import time
 from faceoff.db import use_db
 
 @use_db
+def search_leagues(db, **kwargs):
+    return db.search('league', **kwargs)
+
+@use_db
 def create_league(db, name, desc=None, active=True):
     """
     Creates a new faceoff league. Returns the new league's ID on success.
