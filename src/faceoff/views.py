@@ -3,10 +3,12 @@ Copyright: (c) 2012 Artem Nezvigin <artem@artnez.com>
 License: MIT, see LICENSE for details
 """
 
+import logging
 from flask import Flask, g, request, abort, redirect, url_for, session
 from faceoff import app
 from faceoff.forms import LoginForm, JoinForm
 from faceoff.helpers.decorators import templated, authenticated
+from faceoff.models.league import search_leagues
 from faceoff.models.user import find_user, create_user, auth_login, auth_logout
 from faceoff.models.settings import get_setting
 
@@ -18,7 +20,20 @@ def db_close(exception): # pylint:disable=W0613
 @app.route('/')
 @templated()
 @authenticated
-def home():
+def dashboard():
+    leagues = search_leagues()
+    return dict(leagues=leagues)
+
+@app.route('/stats')
+@templated()
+@authenticated
+def stats():
+    pass
+
+@app.route('/history')
+@templated()
+@authenticated
+def history():
     pass
 
 @app.route('/gate')
@@ -34,7 +49,7 @@ def login():
     if request.method != 'POST' or not form.validate():
         return dict(login_form=form)
     if auth_login(session, **form.data):
-        return redirect(url_for('home'))
+        return redirect(url_for('dashboard'))
     else:
         return redirect(url_for('login', fail=1))
 
@@ -52,4 +67,4 @@ def join():
     else:
         user_id = create_user(form.nickname.data, form.password.data)
         session['user_id'] = user_id
-        return redirect(url_for('home'))
+        return redirect(url_for('dashboard'))

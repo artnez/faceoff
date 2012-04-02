@@ -3,6 +3,14 @@
  * License: MIT, see LICENSE for details
  */
 
+a {
+    color: #069;
+}
+
+h1 {
+    display: none;
+}
+
 /**
  * Additional form styles.
  */

@@ -60,7 +60,8 @@ def auth_logout(session):
     NOTE: If the application grows, this will likely need to be moved into a
     model that is exclusively responsible for auth management.
     """
-    session.pop('user_id')
+    if session.has_key('user_id'):
+        session.pop('user_id')
 
 def generate_salt():
     """

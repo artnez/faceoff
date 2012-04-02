@@ -3,4 +3,115 @@
  * License: MIT, see LICENSE for details
  */
 
-.container {}
+.container {
+    margin-top: 20px; 
+}
+
+#header {
+    position: relative;
+    background: #333;
+    padding: 20px 0;
+    margin: 0 0 25px 0;
+    width: 100%;
+    overflow: hidden;
+}
+
+#header #logo, 
+#header .separator,
+#header #nickname {
+    float: left;
+    font-size: 42px;
+    line-height: 42px;
+}
+
+#header #logo {
+    margin: 0 2px 0 25px;
+}
+
+#header #logo a {
+    color: #fff;
+    text-shadow: 1px 1px 0 #000;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+#header .separator,
+#header #nickname {
+    font-size: 38px;
+    line-height: 48px;
+    height: 38px;
+}
+
+#header .separator,
+#header #nickname a {
+    color: #666;
+    text-decoration: none;
+}
+
+#header .separator {
+    margin: 0 2px;
+}
+
+#header #nickname {
+    font-family: Georgia;
+}
+
+#header ul.menu {
+    position: absolute;
+    top: 29px;
+    right: 20px;
+    list-style: none;
+}
+
+#header ul.menu li,
+#header ul.menu li a {
+    float: left;
+    margin: 0;
+    padding: 0;
+}
+
+#header ul.menu li {
+    float: left;
+    margin: 0 0 0 6px;
+}
+
+#header ul.menu li a {
+    float: left;
+    color: #333;
+    font-weight: bold;
+    text-transform: uppercase;
+    background: #fff;
+    padding: 4px 8px;
+    text-decoration: none;
+    border-bottom: solid #333 2px;
+}
+
+#header ul.menu li:hover {
+    border-bottom: solid #666 2px;
+}
+
+#header ul.menu li.selected {
+    border-bottom: solid #fff 2px;
+}
+
+#content .section {
+    margin: 0 0 25px 0;
+}
+
+#content .section h2.center {
+    color: #999;
+    text-align: center;
+    font-family: Georgia;
+    font-weight: normal;
+    font-style: italic;
+    background: url('../img/heading-bg-line.png') no-repeat 0 50%;
+}
+
+#content .section h2.center span {
+    background: #fff;
+    padding: 0 12px;
+}
+
+#content .section:hover h2.center {
+    color: #333;
+}

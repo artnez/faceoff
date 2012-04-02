@@ -6,7 +6,11 @@
 
 {%- block body %}
 <div class='container'>
-    <header><h1><a href='{{ url_for('gate') }}'>faceoff</a></h1></header>
-    {%- block content %}{% endblock -%}
+    <div id='header'>
+        <strong id='logo'><a href='{{ url_for('gate') }}'>faceoff</a></strong>
+    </div>
+    <div id='content'>
+        {%- block content %}{% endblock -%}
+    </div>
 </div>
 {% endblock -%}
