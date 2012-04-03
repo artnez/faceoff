@@ -11,49 +11,38 @@
     position: relative;
     background: #333;
     padding: 20px 0;
-    margin: 0 0 25px 0;
+    margin: 0 0 40px 0;
     width: 100%;
     overflow: hidden;
 }
 
-#header #logo, 
-#header .separator,
-#header #nickname {
+#header .title, 
+#header .subtitle {
     float: left;
-    font-size: 42px;
-    line-height: 42px;
 }
 
-#header #logo {
+#header .title {
     margin: 0 2px 0 25px;
 }
 
-#header #logo a {
+#header .title a {
     color: #fff;
+    font-size: 42px;
+    line-height: 42px;
     text-shadow: 1px 1px 0 #000;
     text-transform: uppercase;
     text-decoration: none;
 }
 
-#header .separator,
-#header #nickname {
-    font-size: 38px;
-    line-height: 48px;
-    height: 38px;
+#header .subtitle {
+    background: #666;
 }
 
-#header .separator,
-#header #nickname a {
+#header .subtitle a {
     color: #666;
+    font: italic 38px Georgia;
+    line-height: 38px;
     text-decoration: none;
-}
-
-#header .separator {
-    margin: 0 2px;
-}
-
-#header #nickname {
-    font-family: Georgia;
 }
 
 #header ul.menu {
@@ -80,22 +69,21 @@
     color: #333;
     font-weight: bold;
     text-transform: uppercase;
-    background: #fff;
+    background: #777;
     padding: 4px 8px;
     text-decoration: none;
     border-bottom: solid #333 2px;
 }
 
-#header ul.menu li:hover {
-    border-bottom: solid #666 2px;
+#header ul.menu li:hover a {
 }
 
-#header ul.menu li.selected {
-    border-bottom: solid #fff 2px;
+#header ul.menu li.selected a {
+    background: #fff;
 }
 
 #content .section {
-    margin: 0 0 25px 0;
+    margin: 0 0 40px 0;
 }
 
 #content .section h2.center {
@@ -105,6 +93,7 @@
     font-weight: normal;
     font-style: italic;
     background: url('../img/heading-bg-line.png') no-repeat 0 50%;
+    margin: 0 0 20px 0;
 }
 
 #content .section h2.center span {

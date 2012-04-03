@@ -5,5 +5,5 @@
 
 $(function() {
     // trigger bootstrap opt-in apis
-    $('a[rel=tooltip]').tooltip();
+    $('a.tip').tooltip();
 });

@@ -7,9 +7,12 @@
 {%- block body %}
 <div class='container'>
     <div id='header'>
-        <strong id='logo'><a href='{{ url_for('dashboard') }}'>Faceoff</a></strong>
-        <span class='separator'>/</span>
-        <em id='nickname'><a href='{{ url_for('dashboard') }}'>artnez</a></em>
+        <strong id='logo' class='title'>
+            <a href='{{ url_for('dashboard') }}'>Faceoff</a>
+        </strong>
+        <span id='league' class='subtitle'>
+            <a href='{{ url_for('dashboard') }}'>ping pong</a>
+        </span>
         {% set pages = [
             {'title': 'Dashboard', 'endpoint': 'dashboard'},
             {'title': 'Stats', 'endpoint': 'stats'},
@@ -24,9 +27,9 @@
             <li><a href='{{ url_for('logout') }}'>Logout</a></li>
         </ul>
     </div>
-    <h1>{{ page_title or head_title }}</h1>
     <div id='content'>
-    {%- block content %}{% endblock -%}
+        <h1>{{ page_title or head_title }}</h1>
+        {%- block content %}{% endblock -%}
     </div>
 </div>
 {% endblock -%}

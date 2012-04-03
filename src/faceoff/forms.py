@@ -17,25 +17,33 @@ class LoginForm(Form):
     password = PasswordField('Password', [Required()])
 
 class JoinForm(Form):
-    nickname = TextField('Nickname', [
-        Required(), 
-        Length(2, 20), 
-        Regexp(r'^[a-zA-Z0-9_]+$', message='only numbers, letters, and '
-                                           'underscores allowed.'),
-        UniqueNickname()
-        ])
-    password = PasswordField('Password', [
-        Required(), 
-        Length(4, message='must be at least 4 characters'), 
-        EqualTo('confirm', message='passwords must match')
-        ])
-    confirm = PasswordField('Repeat Password')
-    access_code = PasswordField('Access Code', [Required()],
-        description='Someone should have given you the code. If not, buy them '
-                    'a beer.'
+    nickname = TextField(
+        label='Nickname', 
+        id='join_nickname', 
+        validators=[Required(), Length(2, 20), Regexp(r'^[a-zA-Z0-9_]+$'), UniqueNickname()]
+        )
+    password = PasswordField(
+        label='Password', 
+        id='join_password',
+        validators=[Required(), Length(4), EqualTo('confirm')]
+        )
+    confirm = PasswordField(
+        label='Repeat Password',
+        id='join_confirm'
+        )
+    access_code = PasswordField(
+        label='Access Code', 
+        id='join_access_code',
+        validators=[Required()],
+        description='Someone should have given you the code.'
         )
 
     def __init__(self, *args, **kwargs):
+        """
+        Allow passing an 'access_code' keyword arg. Without this arg, the access
+        code field is removed. With the access_code, an additional validator is 
+        created that includes the code.
+        """
         access_code = None
         if kwargs.has_key('access_code'):
             access_code = kwargs['access_code'] 
