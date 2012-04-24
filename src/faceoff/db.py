@@ -7,14 +7,15 @@ import os
 import re
 import sqlite3 
 import atexit
+import string # pylint:disable=W0402
 from threading import current_thread
-from logging import getLogger
+from logging import getLogger, debug
 from tempfile import gettempdir
 from contextlib import closing
 from glob import glob
 from uuid import uuid4, uuid5
 from hashlib import sha1
-from random import random
+from random import random, shuffle
 from time import time
 from natsort import natsort
 from functools import wraps
@@ -260,6 +261,18 @@ class Connection(sqlite3.Connection):
         UUID is generated and returned as a 32 character hex string.
         """
         return uuid5(uuid4(), table).hex
+
+    def generate_slug(self, table, field='slug', length=6):
+        """
+        Returns a new unique slug for the given table name.
+        """
+        chars = list(string.ascii_lowercase + string.digits)
+        while True:
+            shuffle(chars)
+            slug = ''.join(chars[0:length])
+            if self.find(table, **{field: slug}) is None:
+                break
+        return slug
 
     def clean(self, string):
         """

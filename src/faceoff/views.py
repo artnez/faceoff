@@ -3,12 +3,13 @@ Copyright: (c) 2012 Artem Nezvigin <artem@artnez.com>
 License: MIT, see LICENSE for details
 """
 
-import logging
-from flask import Flask, g, request, abort, redirect, url_for, session
+import os
+from logging import debug
+from flask import Flask, g, request, abort, redirect, url_for, session, send_from_directory
 from faceoff import app
 from faceoff.forms import LoginForm, JoinForm
 from faceoff.helpers.decorators import templated, authenticated
-from faceoff.models.league import search_leagues
+from faceoff.models.league import search_leagues, find_league
 from faceoff.models.user import find_user, create_user, auth_login, auth_logout
 from faceoff.models.settings import get_setting
 
@@ -16,6 +17,29 @@ from faceoff.models.settings import get_setting
 def db_close(exception): # pylint:disable=W0613
     if hasattr(g, 'db'):
         g.db.close()
+
+@app.url_defaults
+def add_league_to_url(endpoint, view_args):
+    if ('league' not in view_args and 
+        app.url_map.is_endpoint_expecting(endpoint, 'league') and 
+        'league' in request.view_args):
+        league = request.view_args['league']
+        view_args['league'] = league['slug'] if 'slug' in league else league
+
+@app.url_value_preprocessor
+def get_league_from_url(endpoint, view_args):
+    if not view_args or 'league' not in view_args:
+        return
+    slug = view_args['league'].split('-')[0]
+    league = find_league(slug=slug)
+    if league is None:
+        abort(404)
+    view_args['league'] = league
+
+@app.route('/favicon.ico')
+def favicon():
+    path = os.path.join(app.root_path, 'static')
+    return send_from_directory(path, 'favicon.ico')
 
 @app.route('/')
 @authenticated
@@ -26,19 +50,18 @@ def landing():
 @templated()
 @authenticated
 def dashboard(league):
-    leagues = search_leagues()
-    return dict(leagues=leagues)
-
-@app.route('/stats')
-@templated()
-@authenticated
-def stats():
     pass
 
-@app.route('/history')
+@app.route('/<league>/stats/')
 @templated()
 @authenticated
-def history():
+def stats(league):
+    pass
+
+@app.route('/<league>/history/')
+@templated()
+@authenticated
+def history(league):
     pass
 
 @app.route('/gate')

@@ -7,14 +7,19 @@ from time import time
 from faceoff.db import use_db
 
 @use_db
+def find_league(db, **kwargs):
+    return db.find('league', **kwargs)
+
+@use_db
 def search_leagues(db, **kwargs):
     return db.search('league', **kwargs)
 
 @use_db
-def create_league(db, name, description=None, active=True):
+def create_league(db, name, slug=None, description=None, active=True):
     return db.insert(
         'league',
         name = name,
+        slug = db.generate_slug('league'),
         description = description,
         active = '1' if active else '0',
         date_created = int(time())
