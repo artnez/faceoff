@@ -27,9 +27,16 @@ CREATE INDEX idx_user_newest ON user (date_created);
 CREATE TABLE league (
     id CHAR(32) PRIMARY KEY,
     name VARCHAR(64),
-    desc TEXT DEFAULT NULL,
+    description TEXT DEFAULT NULL,
     active TINYINT(1) DEFAULT 1,
     date_created INT(11)
     );
 CREATE INDEX idx_league_name ON league (name);
 CREATE INDEX idx_league_newest ON league (date_created);
+
+CREATE TABLE league_member (
+    id CHAR(32) PRIMARY KEY,
+    user_id CHAR(32),
+    league_id CHAR(32)
+    );
+CREATE UNIQUE INDEX idx_user_league ON league_member(id, user_id, league_id);

@@ -18,9 +18,14 @@ def db_close(exception): # pylint:disable=W0613
         g.db.close()
 
 @app.route('/')
+@authenticated
+def landing():
+    return 'blah'
+
+@app.route('/<league>/')
 @templated()
 @authenticated
-def dashboard():
+def dashboard(league):
     leagues = search_leagues()
     return dict(leagues=leagues)
 
@@ -49,7 +54,7 @@ def login():
     if request.method != 'POST' or not form.validate():
         return dict(login_form=form)
     if auth_login(session, **form.data):
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('landing'))
     else:
         return redirect(url_for('login', fail=1))
 
@@ -67,4 +72,4 @@ def join():
     else:
         user_id = create_user(form.nickname.data, form.password.data)
         session['user_id'] = user_id
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('landing'))

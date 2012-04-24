@@ -18,6 +18,10 @@ def find_user(db, **kwargs):
     return db.find('user', **kwargs)
 
 @use_db
+def all_users(db):
+    return db.search('user')
+
+@use_db
 def create_user(db, nickname, password, rank=None):
     """
     Creates a new faceoff user. Returns the newly created user ID on success.

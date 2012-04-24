@@ -11,14 +11,19 @@ def search_leagues(db, **kwargs):
     return db.search('league', **kwargs)
 
 @use_db
-def create_league(db, name, desc=None, active=True):
-    """
-    Creates a new faceoff league. Returns the new league's ID on success.
-    """
+def create_league(db, name, description=None, active=True):
     return db.insert(
         'league',
         name = name,
-        desc = desc,
+        description = description,
         active = '1' if active else '0',
         date_created = int(time())
+        )
+
+@use_db
+def add_league_member(db, league_id, user_id):
+    return db.insert(
+        'league_member',
+        user_id=user_id,
+        league_id=league_id
         )

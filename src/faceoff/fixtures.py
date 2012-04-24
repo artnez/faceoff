@@ -6,12 +6,12 @@ License: MIT, see LICENSE for details
 """
 
 import os
-from logging import getLogger
+from logging import getLogger, debug
 from random import choice, shuffle, randint
 from jinja2.utils import generate_lorem_ipsum
 import json
-from faceoff.models.user import create_user
-from faceoff.models.league import create_league
+from faceoff.models.user import create_user, all_users
+from faceoff.models.league import create_league, add_league_member
 from faceoff.models.settings import set_setting
 
 _logger = None
@@ -92,8 +92,13 @@ def generate_leagues(db, min_count=2, max_count=5, truncate=False):
     if truncate:
         db.truncate_table('league')
     leagues = []
+    users = all_users(db=db)
     for league in rand_leagues(min_count, max_count):
-        leagues.append(create_league(db=db, **league))
+        league_id = create_league(db=db, **league)
+        leagues.append(league_id)
+        for user in users:
+            if randint(0, 2) == 2:
+                add_league_member(league_id, user['id'], db=db)
     logger().info('created %d leagues (%s)' % (len(leagues), ','.join(leagues)))
     return leagues
 
@@ -127,7 +132,7 @@ def rand_leagues(min_count=2, max_count=5):
         name = games[n]
         desc = rand_text(1, 3)
         active = True if randint(0, 3) else False
-        yield {'name': name, 'desc': desc, 'active': active}
+        yield {'name': name, 'description': desc, 'active': active}
 
 def rand_text(min_count, max_count):
     """
