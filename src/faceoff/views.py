@@ -11,7 +11,7 @@ from faceoff.forms import LoginForm, JoinForm
 from faceoff.helpers.decorators import templated, authenticated
 from faceoff.models.league import search_leagues, find_league
 from faceoff.models.user import find_user, create_user, auth_login, auth_logout
-from faceoff.models.settings import get_setting
+from faceoff.models.setting import get_setting
 
 @app.teardown_request
 def db_close(exception): # pylint:disable=W0613

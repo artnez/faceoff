@@ -26,7 +26,7 @@ CREATE INDEX idx_user_newest ON user (date_created);
 
 CREATE TABLE league (
     id CHAR(32) PRIMARY KEY,
-    slug CHAR(6),
+    slug CHAR(64),
     name VARCHAR(64),
     description TEXT DEFAULT NULL,
     active TINYINT(1) DEFAULT 1,

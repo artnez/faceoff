@@ -12,7 +12,7 @@ from jinja2.utils import generate_lorem_ipsum
 import json
 from faceoff.models.user import create_user, all_users
 from faceoff.models.league import create_league, add_league_member
-from faceoff.models.settings import set_setting
+from faceoff.models.setting import set_setting
 
 _logger = None
 

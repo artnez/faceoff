@@ -113,6 +113,8 @@ def use_db(f):
     has_self = len(varnames) > 0 and varnames[0] == 'self'
     @wraps(f)
     def decorator(*args, **kwargs):
+        if len(args) > 0 and isinstance(args[0], Connection):
+            return f(*args, **kwargs)
         if kwargs.has_key('db'):
             db = get_connection(kwargs['db'])
             del kwargs['db']
@@ -262,7 +264,7 @@ class Connection(sqlite3.Connection):
         """
         return uuid5(uuid4(), table).hex
 
-    def generate_slug(self, table, field='slug', length=6):
+    def generate_slug(self, table, field='slug', length=4):
         """
         Returns a new unique slug for the given table name.
         """

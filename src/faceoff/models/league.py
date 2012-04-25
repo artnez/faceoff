@@ -3,6 +3,7 @@ Copyright: (c) 2012 Artem Nezvigin <artem@artnez.com>
 License: MIT, see LICENSE for details
 """
 
+import re
 from time import time
 from faceoff.db import use_db
 
@@ -19,7 +20,7 @@ def create_league(db, name, slug=None, description=None, active=True):
     return db.insert(
         'league',
         name = name,
-        slug = db.generate_slug('league'),
+        slug = slug if slug else generate_league_slug(db, name),
         description = description,
         active = '1' if active else '0',
         date_created = int(time())
@@ -32,3 +33,14 @@ def add_league_member(db, league_id, user_id):
         user_id=user_id,
         league_id=league_id
         )
+
+@use_db
+def generate_league_slug(db, name):
+    short = re.sub(r'[^0-9a-zA-Z]+', '-', name.lower()).strip('-')
+    count = 0
+    while True:
+        slug = short + str(count) if count > 0 else short
+        if find_league(db, short=slug) is None:
+            break
+        count += 1
+    return slug
