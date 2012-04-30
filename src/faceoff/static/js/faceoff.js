@@ -3,7 +3,12 @@
  * License: MIT, see LICENSE for details
  */
 
-$(function() {
+jQuery(function($) {
     // trigger bootstrap opt-in apis
     $('a.tip').tooltip();
+
+    // logout confirmation
+    $('#logout').click(function() {
+        return confirm($(this).attr('data-confirm'));
+    });
 });
