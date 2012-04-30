@@ -4,7 +4,7 @@
  */
 
 .container {
-    margin-top: 20px; 
+    margin-top: 30px; 
 }
 
 #header {
@@ -12,8 +12,17 @@
     background: #333;
     padding: 20px 0;
     margin: 0 0 40px 0;
-    width: 100%;
-    overflow: hidden;
+    zoom: 1;
+}
+
+#header:before,
+#header:after {
+    content:"";
+    display:table;
+}
+
+#header:after {
+    clear:both;
 }
 
 #header .title, 
@@ -22,27 +31,31 @@
 }
 
 #header .title {
-    margin: 0 2px 0 25px;
+    margin: 0 12px 0 25px;
 }
 
 #header .title a {
     color: #fff;
     font-size: 42px;
-    line-height: 42px;
+    line-height: 1;
     text-shadow: 1px 1px 0 #000;
     text-transform: uppercase;
     text-decoration: none;
 }
 
 #header .subtitle {
-    background: #666;
+    position: relative;
+    color: #333;
+    font-size: 22px;
+    line-height: 1;
+    text-transform: uppercase;
+    padding: 5px 8px;
+    margin: 6px 0 0 0;
+    background: #fff;
 }
 
-#header .subtitle a {
-    color: #666;
-    font: italic 38px Georgia;
-    line-height: 38px;
-    text-decoration: none;
+#header h3.main {
+    display: none;
 }
 
 #header ul.menu {
@@ -76,10 +89,49 @@
 }
 
 #header ul.menu li:hover a {
+    background: #aaa;
 }
 
 #header ul.menu li.selected a {
     background: #fff;
+}
+
+#header h3.other {
+    position: absolute;
+    top: -18px;
+    left: 0;
+    font-size: 12px;
+    line-height: 1;
+    color: #666;
+    text-transform: uppercase;
+}
+
+#header h3.other:after {
+    content: ":";
+}
+
+#header ul.other-menu {
+    position: absolute;
+    top: -20px;
+    left: 112px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+#header ul.other-menu li {
+    float: left;
+    margin-right: 4px;
+}
+
+#header ul.other-menu li:after {
+    content: ",";
+}
+
+#header ul.other-menu li:last-child:after {
+    content: ""
 }
 
 #content .section {

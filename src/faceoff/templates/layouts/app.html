@@ -1,35 +1,44 @@
 {% extends 'layouts/base.html' %}
 
-{% block stylesheet %}
+{% block stylesheet -%}
 <link rel='stylesheet' media='screen' href='{{ url_for('static', filename='css/faceoff.app.css') }}'>
-{% endblock %}
+{%- endblock %}
 
 {%- block body %}
 <div class='container'>
     <div id='header'>
-        <strong id='logo' class='title'>
-            <a href='{{ url_for('dashboard') }}'>Faceoff</a>
-        </strong>
-        <span id='league' class='subtitle'>
-            <a href='{{ url_for('dashboard') }}'>ping pong</a>
-        </span>
-        {% set pages = [
+        <strong class='title'><a href='{{ url_for('landing') }}'>Faceoff</a></strong>
+        <strong class='subtitle'>{{ league.name }}</strong>
+
+        <h3 class='main'>League Menu</h3>
+        {%- set pages = [
             {'title': 'Dashboard', 'endpoint': 'dashboard'},
             {'title': 'Stats', 'endpoint': 'stats'},
             {'title': 'History', 'endpoint': 'history'},
         ] %}
-        <ul id='nav' class='menu'>
-            {% for page in pages %}
-            <li {% if request.endpoint == page.endpoint %}class='selected'{% endif %}>
+        <ul class='menu'>
+            {% for page in pages -%}
+            <li{% if request.endpoint == page.endpoint %} class='selected'{% endif %}>
+                {%- if request.endpoint == page.endpoint %}<strong>{% endif -%}
                 <a href='{{ page.url or url_for(page.endpoint) }}'>{{ page.title }}</a>
+                {%- if request.endpoint == page.endpoint %}</strong>{% endif -%}
             </li>
-            {% endfor %}
-            <li><a href='{{ url_for('logout') }}'>Logout</a></li>
+            {% endfor -%}
+            <li><a id='logout' data-confirm='Are you sure you want to logout?' href='{{ url_for('logout') }}'>Logout</a></li>
+        </ul>
+
+        <h3 class='other'>Other Leagues</h3>
+        <ul class='other-menu'>
+            {%- for active_league in active_leagues if league.slug != active_league.slug %}
+            <li><a href='{{ url_for('dashboard', league=active_league.slug) }}'>{{ active_league.name }}</a></li>
+            {%- endfor %}
         </ul>
     </div>
     <div id='content'>
-        <h1>{{ page_title or head_title }}</h1>
-        {%- block content %}{% endblock -%}
+<!-- CONTENT START -->
+<h1>{{ page_title or head_title }}</h1>
+{% block content %}{% endblock %}
+<!-- CONTENT END -->
     </div>
 </div>
-{% endblock -%}
+{% endblock %}
