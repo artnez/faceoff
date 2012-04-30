@@ -67,7 +67,7 @@ def generate_full_db(db, truncate=False):
     generate_settings(db)
     db.commit()
 
-def generate_users(db, min_count=5, max_count=20, truncate=False):
+def generate_users(db, min_count=8, max_count=25, truncate=False):
     """
     Generates a random amount of users into the given database connection
     object. The amount of users will fall between `min_count` and `max_count`. 
@@ -82,7 +82,7 @@ def generate_users(db, min_count=5, max_count=20, truncate=False):
     logger().info('created %d users (%s)' % (len(users), ','.join(users)))
     return users
 
-def generate_leagues(db, min_count=2, max_count=5, truncate=False):
+def generate_leagues(db, min_count=4, max_count=10, truncate=False):
     """
     Generates a random amount of leagues into the given database connection
     object. The amount of leagues will fall between `min_count` and `max_count`. 
@@ -121,7 +121,7 @@ def rand_users(min_count=3, max_count=10):
         rank = 'admin' if n < 2 else 'member'
         yield {'nickname': nickname, 'password': 'faceoff!', 'rank': rank}
 
-def rand_leagues(min_count=2, max_count=5):
+def rand_leagues(min_count, max_count):
     """
     Returns a list of random objects that map the properties of a league record.
     """
