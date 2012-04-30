@@ -6,11 +6,11 @@
 
 {%- block body %}
 <div class='container'>
-    <div id='header'>
+    <div id='header' class='clearfix'>
         <strong class='title'><a href='{{ url_for('landing') }}'>Faceoff</a></strong>
         <strong class='subtitle'>{{ league.name }}</strong>
 
-        <h3 class='main'>League Menu</h3>
+        <h3>League Menu</h3>
         {%- set pages = [
             {'title': 'Dashboard', 'endpoint': 'dashboard'},
             {'title': 'Stats', 'endpoint': 'stats'},
@@ -27,12 +27,15 @@
             <li><a id='logout' data-confirm='Are you sure you want to logout?' href='{{ url_for('logout') }}'>Logout</a></li>
         </ul>
 
-        <h3 class='other'>Other Leagues</h3>
-        <ul class='other-menu'>
+        <h3>Other Leagues</h3>
+        <ul class='switch'>
             {%- for active_league in active_leagues if league.slug != active_league.slug %}
             <li><a href='{{ url_for('dashboard', league=active_league.slug) }}'>{{ active_league.name }}</a></li>
             {%- endfor %}
         </ul>
+    </div>
+    <div id='attention'>
+        {% include 'forms/report.html' %}
     </div>
     <div id='content'>
 <!-- CONTENT START -->

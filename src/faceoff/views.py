@@ -7,7 +7,7 @@ import os
 from logging import debug
 from flask import Flask, g, request, abort, redirect, url_for, session, send_from_directory
 from faceoff import app
-from faceoff.forms import LoginForm, JoinForm
+from faceoff.forms import LoginForm, JoinForm, ReportForm
 from faceoff.helpers.decorators import templated, authenticated
 from faceoff.models.league import find_league, get_active_leagues
 from faceoff.models.user import find_user, create_user, auth_login, auth_logout
@@ -41,6 +41,13 @@ def inject_league_data():
         return {}
     return dict(league=g.league, active_leagues=get_active_leagues())
 
+@app.context_processor
+def inject_report_form():
+    if not hasattr(g, 'league'):
+        return {}
+    report_form = ReportForm()
+    return dict(report_form=report_form)
+
 @app.route('/favicon.ico')
 def favicon():
     path = os.path.join(app.root_path, 'static')
@@ -56,6 +63,11 @@ def landing():
 @authenticated
 def dashboard():
     pass
+
+@app.route('/<league>/report')
+@authenticated
+def report():
+    return 'foo'
 
 @app.route('/<league>/stats/')
 @templated()

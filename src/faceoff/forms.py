@@ -3,7 +3,7 @@ Copyright: (c) 2012 Artem Nezvigin <artem@artnez.com>
 License: MIT, see LICENSE for details
 """
 
-from wtforms import Form, TextField
+from wtforms import Form, TextField, SelectField, RadioField
 from wtforms.widgets import PasswordInput
 from wtforms.validators import Required, Length, Regexp, EqualTo, AnyOf
 from faceoff.helpers.validators import UniqueNickname
@@ -11,6 +11,10 @@ from faceoff.db import get_connection
 
 class PasswordField(TextField):
     widget = PasswordInput(hide_value=False)
+
+class ReportForm(Form):
+    opponent = SelectField('Who did you play?', choices=[])
+    result = RadioField('Did you win?', choices=[('1', 'Yes'), ('0', 'No')])
 
 class LoginForm(Form):
     nickname = TextField('Nickname', [Required()])

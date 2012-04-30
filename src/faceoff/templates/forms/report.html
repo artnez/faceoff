@@ -1,0 +1,29 @@
+<form id='report' class='form-inline clearfix' action='{{ url_for('report') }}' method='post'>
+    <h3>Report Match</h3>
+    <fieldset>
+        <div class='control-group'>
+            <label class='control-label' for='{{ report_form.opponent.id }}'>
+                {{ report_form.opponent.label.text }}
+            </label>
+            <select id='{{ report_form.opponent.id }}' {% if not report_form.opponent.length %}disabled{% endif %}>
+                {% for subfield in report_form.opponent %}
+                <option value='{{ subfield.value }}'>{{ subfield.label }}</option>
+                {% else %}
+                <option value=''>- -</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class='control-group'>
+            <label class='control-label'>
+                {{ report_form.result.label.text }}
+            </label>
+            {% for subfield in report_form.result %}
+            <label class='radio inline'>
+                <input type='radio' id='{{ subfield.id }}' name='{{ subfield.name }}' />
+                {{ subfield.label }}
+            </label>
+            {% endfor %}
+        </div>
+        <button type='submit' class='btn btn-success btn-small'>Report!</button>
+    </fieldset>
+</form>
