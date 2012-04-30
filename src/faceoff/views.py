@@ -9,7 +9,7 @@ from flask import Flask, g, request, abort, redirect, url_for, session, send_fro
 from faceoff import app
 from faceoff.forms import LoginForm, JoinForm
 from faceoff.helpers.decorators import templated, authenticated
-from faceoff.models.league import search_leagues, find_league
+from faceoff.models.league import find_league, get_active_leagues
 from faceoff.models.user import find_user, create_user, auth_login, auth_logout
 from faceoff.models.setting import get_setting
 
@@ -22,19 +22,24 @@ def db_close(exception): # pylint:disable=W0613
 def add_league_to_url(endpoint, view_args):
     if ('league' not in view_args and 
         app.url_map.is_endpoint_expecting(endpoint, 'league') and 
-        'league' in request.view_args):
-        league = request.view_args['league']
-        view_args['league'] = league['slug'] if 'slug' in league else league
+        hasattr(g, 'league')):
+        view_args['league'] = g.league['slug']
 
 @app.url_value_preprocessor
 def get_league_from_url(endpoint, view_args):
     if not view_args or 'league' not in view_args:
         return
-    slug = view_args['league'].split('-')[0]
+    slug = view_args.pop('league')
     league = find_league(slug=slug)
-    if league is None:
+    if league is None or league['active'] != 1:
         abort(404)
-    view_args['league'] = league
+    g.league = league
+
+@app.context_processor
+def inject_league_data():
+    if not hasattr(g, 'league'):
+        return {}
+    return dict(league=g.league, active_leagues=get_active_leagues())
 
 @app.route('/favicon.ico')
 def favicon():
@@ -49,26 +54,26 @@ def landing():
 @app.route('/<league>/')
 @templated()
 @authenticated
-def dashboard(league):
+def dashboard():
     pass
 
 @app.route('/<league>/stats/')
 @templated()
 @authenticated
-def stats(league):
+def stats():
     pass
 
 @app.route('/<league>/history/')
 @templated()
 @authenticated
-def history(league):
+def history():
     pass
 
 @app.route('/gate')
 @templated()
 def gate():
-    return dict(login_form=LoginForm(), 
-                join_form=JoinForm(access_code=get_setting('access_code')))
+    join_form = JoinForm(access_code=get_setting('access_code'))
+    return dict(login_form=LoginForm(), join_form=join_form)
 
 @app.route('/login', methods=['GET', 'POST'])
 @templated()

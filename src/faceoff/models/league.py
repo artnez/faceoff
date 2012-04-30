@@ -16,6 +16,10 @@ def search_leagues(db, **kwargs):
     return db.search('league', **kwargs)
 
 @use_db
+def get_active_leagues(db):
+    return search_leagues(db, active=True)
+
+@use_db
 def create_league(db, name, slug=None, description=None, active=True):
     return db.insert(
         'league',
