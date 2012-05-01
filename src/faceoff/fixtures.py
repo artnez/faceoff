@@ -10,7 +10,7 @@ from logging import getLogger, debug
 from random import choice, shuffle, randint
 from jinja2.utils import generate_lorem_ipsum
 import json
-from faceoff.models.user import create_user, all_users
+from faceoff.models.user import create_user, get_all_users
 from faceoff.models.league import create_league, add_league_member
 from faceoff.models.setting import set_setting
 
@@ -92,7 +92,7 @@ def generate_leagues(db, min_count=4, max_count=10, truncate=False):
     if truncate:
         db.truncate_table('league')
     leagues = []
-    users = all_users(db=db)
+    users = get_all_users(db=db)
     for league in rand_leagues(min_count, max_count):
         league_id = create_league(db=db, **league)
         leagues.append(league_id)

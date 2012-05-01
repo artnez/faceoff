@@ -34,9 +34,11 @@
             {%- endfor %}
         </ul>
     </div>
+    {% if active_users %}
     <div id='attention'>
         {% include 'forms/report.html' %}
     </div>
+    {% endif %}
     <div id='content'>
 <!-- CONTENT START -->
 <h1>{{ page_title or head_title }}</h1>

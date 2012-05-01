@@ -18,8 +18,16 @@ def find_user(db, **kwargs):
     return db.find('user', **kwargs)
 
 @use_db
-def all_users(db):
-    return db.search('user')
+def search_users(db, **kwargs):
+    return db.search('user', **kwargs)
+
+@use_db
+def get_all_users(db):
+    return search_users(db)
+
+@use_db
+def get_active_users(db):
+    return search_users(db)
 
 @use_db
 def create_user(db, nickname, password, rank=None):

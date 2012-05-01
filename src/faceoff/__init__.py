@@ -14,6 +14,7 @@ log.init_app(app)
 cache.init_app(app)
 db.init_app(app)
 fixtures.init_app(app)
-tpl.init_app(app)
 
-import faceoff.views
+import faceoff.views.base
+import faceoff.views.auth
+import faceoff.views.league
