@@ -13,8 +13,8 @@ class PasswordField(TextField):
     widget = PasswordInput(hide_value=False)
 
 class ReportForm(Form):
-    opponent = SelectField('Who did you play against?', choices=[])
-    result = RadioField('Did you win the match?', choices=[('1', 'Yes'), ('0', 'No')])
+    opponent = SelectField('Who did you play?', choices=[])
+    result = RadioField('Did you win?', choices=[('1', 'Yes'), ('0', 'No')])
 
     def __init__(self, users, *args, **kwargs):
         super(ReportForm, self).__init__(*args, **kwargs)

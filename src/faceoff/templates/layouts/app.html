@@ -8,12 +8,12 @@
 <div class='container'>
     <div id='header' class='clearfix'>
         <strong class='title'><a href='{{ url_for('landing') }}'>Faceoff</a></strong>
-        <strong class='subtitle'>{{ league.name }}</strong>
+        <strong class='subtitle'>{{ current_league.name }}</strong>
 
         <h3>League Menu</h3>
         {%- set pages = [
             {'title': 'Dashboard', 'endpoint': 'dashboard'},
-            {'title': 'Stats', 'endpoint': 'stats'},
+            {'title': 'Standings', 'endpoint': 'standings'},
             {'title': 'History', 'endpoint': 'history'},
         ] %}
         <ul class='menu'>
@@ -29,16 +29,11 @@
 
         <h3>Other Leagues</h3>
         <ul class='switch'>
-            {%- for active_league in active_leagues if league.slug != active_league.slug %}
+            {%- for active_league in active_leagues if current_league.slug != active_league.slug %}
             <li><a href='{{ url_for('dashboard', league=active_league.slug) }}'>{{ active_league.name }}</a></li>
             {%- endfor %}
         </ul>
     </div>
-    {% if active_users %}
-    <div id='attention'>
-        {% include 'forms/report.html' %}
-    </div>
-    {% endif %}
     <div id='content'>
 <!-- CONTENT START -->
 <h1>{{ page_title or head_title }}</h1>

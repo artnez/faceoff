@@ -1,5 +1,12 @@
 {% extends 'layouts/app.html' %}
 {% set head_title = 'Dashboard' %}
 {% block content %}
-dashboard
+<div class='row'>
+    <div class='span9'>
+        <p>abc</p>
+    </div>
+    <div class='span3'>
+        {% include 'forms/report.html' %}
+    </div>
+</div>
 {% endblock %}

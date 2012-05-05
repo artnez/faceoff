@@ -5,6 +5,7 @@ License: MIT, see LICENSE for details
 
 from functools import wraps
 from flask import g, request, session, render_template, url_for, redirect
+from faceoff.models.user import find_user
 
 def templated(template_name=None):
     """
@@ -33,7 +34,12 @@ def authenticated(f):
     """
     @wraps(f)
     def decorator(*args, **kwargs):
-        if session.get('user_id') is None:
+        user_id = session.get('user_id')
+        if user_id is None:
             return redirect(url_for('gate'))
+        user = find_user(id=user_id)
+        if user is None:
+            return redirect(url_for('gate'))
+        g.current_user = user
         return f(*args, **kwargs)
     return decorator

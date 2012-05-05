@@ -11,8 +11,7 @@
     position: relative;
     background: #333;
     padding: 20px 0;
-    margin: 0 0 10px 0;
-    zoom: 1;
+    margin: 0 0 25px 0;
 }
 
 #header h3 {
@@ -109,70 +108,19 @@
     padding: 6px 8px;
 }
 
-#attention {
-    margin: 0 0 40px 0;
-}
-
-#report {
-    position: relative;
-    padding: 10px 16px;
-    background: #eee;
-}
-
 #report h3 {
-    float: left;
-    font-size: 18px;
-    margin: 0 34px 0 0;
-    padding: 0;
-    line-height: 1.4;
+    font-size: 20px;
+    margin: 0 0 14px 0;
+    padding: 0 0 2px 0;
+    border-bottom: solid #ddd 1px;
 }
 
-#report fieldset {
-    float: left;
+#report .result .control-label {
+    margin-bottom: 2px;
 }
 
-#report .field {
-    float: left;
-    margin: 0 20px 0 0;
-}
-
-#report .field > label {
-    float: left;
-    font-size: 14px;
-    margin: 4px 8px 0 0;
-}
-
-#report .field > .control-group {
-    float: left;
-    margin: 0 8px 0 0;
-}
-
-#report .field-opponent {
-    margin-right: 32px;
-}
-
-#report .field-result .control-group > label {
-    padding-top: 4px;
-    margin-left: 4px;
-}
-
-#report .field-result .control-group label input {
-    margin-right: 4px;
-}
-
-#report .field-result .control-group label label {
-    margin-bottom: 0;
-    line-height: 19px;
-}
-
-#report .field-opponent select {
-    width: 150px;
-}
-
-#report .btn {
-    position: absolute;
-    top: 10px;
-    right: 16px;
+#report .buttons {
+    padding-top: 6px;
 }
 
 #content .section {

@@ -1,29 +1,31 @@
-<form id='report' class='form-inline clearfix' action='{{ url_for('report') }}' method='post'>
-    <h3>Report Match</h3>
+<form id='report' class='form' action='{{ url_for('report') }}' method='post'>
+    <h3>Match Report</h3>
     <fieldset>
-        <div class='field field-opponent'>
-            <label for='{{ report_form.opponent.id }}'>{{ report_form.opponent.label.text }}</label>
-            <select id='{{ report_form.opponent.id }}' {% if report_form.opponent.length == 0 %}disabled{% endif %}>
-                {%- for subfield in report_form.opponent if subfield.label.text != current_user.nickname %}
-                {{ subfield }}
-                {% else %}
-                <option value=''>- -</option>
-                {%- endfor %}
-            </select>
+        <div class='opponent control-group'>
+            <label class='control-label' for='{{ report_form.opponent.id }}'>{{ report_form.opponent.label.text }}</label>
+            <div class='controls'>
+                <select id='{{ report_form.opponent.id }}' name='{{ report_form.opponent.name }}' {% if report_form.opponent.length == 0 %}disabled{% endif %}>
+                    {%- for subfield in report_form.opponent if subfield.label.text != current_user.nickname %}
+                    <option value='{{ subfield.data }}'>{{ subfield.label }}</option>
+                    {% else %}
+                    <option value=''>- -</option>
+                    {%- endfor %}
+                </select>
+            </div>
         </div>
-
-        <div class='field field-result'>
-            <label>{{ report_form.result.label.text }}</label>
+        <div class='result control-group'>
+            <label class='control-label'>{{ report_form.result.label.text }}</label>
             <div class='control-group'>
                 {% for subfield in report_form.result %}
                 <label class='radio inline'>
-                    <input type='radio' id='{{ subfield.id }}' name='{{ subfield.name }}' />
+                    <input type='radio' id='{{ subfield.id }}' name='{{ subfield.name }}' value='{{ subfield.data }}' {% if subfield.data == '0' %}checked='checked'{% endif %} />
                     {{ subfield.label }}
                 </label>
                 {% endfor %}
             </div>
         </div>
-
-        <button type='submit' class='btn btn-success'>Submit Report</button>
+        <div class='buttons'>
+            <button type='submit' class='btn btn-success'>Submit Report</button>
+        </div>
     </fieldset>
 </form>

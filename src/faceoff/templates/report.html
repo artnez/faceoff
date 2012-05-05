@@ -1,0 +1,10 @@
+<h1>Failed Submitting Report!</h1>
+
+<dl>
+{% for field in form.errors %}
+    <dt><strong>{{ field }}</strong></dt>
+    {% for error in form.errors[field] %}
+    <dd>{{ error }}</dd>
+    {% endfor %}
+{% endfor %}
+</dl>

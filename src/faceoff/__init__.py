@@ -15,6 +15,4 @@ cache.init_app(app)
 db.init_app(app)
 fixtures.init_app(app)
 
-import faceoff.views.base
-import faceoff.views.auth
-import faceoff.views.league
+import faceoff.views
