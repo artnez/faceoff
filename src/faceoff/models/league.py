@@ -40,7 +40,7 @@ def generate_league_slug(db, name):
     count = 0
     while True:
         slug = short + str(count) if count > 0 else short
-        if find_league(db, short=slug) is None:
+        if find_league(db, slug=slug) is None:
             break
         count += 1
     return slug

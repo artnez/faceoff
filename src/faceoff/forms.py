@@ -3,22 +3,15 @@ Copyright: (c) 2012 Artem Nezvigin <artem@artnez.com>
 License: MIT, see LICENSE for details
 """
 
+import re
 from wtforms import Form, TextField, SelectField, RadioField
 from wtforms.widgets import PasswordInput
-from wtforms.validators import Required, Length, Regexp, EqualTo, AnyOf
+from wtforms.validators import Required, Length, Regexp, EqualTo, AnyOf, NoneOf
 from faceoff.helpers.validators import UniqueNickname
 from faceoff.db import get_connection
 
 class PasswordField(TextField):
     widget = PasswordInput(hide_value=False)
-
-class ReportForm(Form):
-    opponent = SelectField('I played against', choices=[])
-    result = SelectField('and', choices=[('1', 'Won'), ('0', 'Lost')])
-
-    def __init__(self, users, *args, **kwargs):
-        super(ReportForm, self).__init__(*args, **kwargs)
-        self.opponent.choices = [(u['id'], u['nickname']) for u in users]
 
 class LoginForm(Form):
     nickname = TextField('Nickname', [Required()])
@@ -62,3 +55,18 @@ class JoinForm(Form):
         else:
             validator = AnyOf([access_code], message='that code is wrong')
             self.access_code.validators.append(validator)
+
+class ReportForm(Form):
+    opponent = SelectField('I played against', choices=[])
+    result = SelectField('and', choices=[('1', 'Won'), ('0', 'Lost')])
+
+    def __init__(self, users, *args, **kwargs):
+        super(ReportForm, self).__init__(*args, **kwargs)
+        self.opponent.choices = [(u['id'], u['nickname']) for u in users]
+
+class NewLeagueForm(Form):
+    name = TextField(
+        label='League Name', 
+        id='name',
+        validators=[Required(), Length(2), NoneOf(['new'], values_formatter=lambda v: map(str.lower, v))]
+        )

@@ -7,7 +7,7 @@ import logging
 from time import time
 from faceoff.db import use_db
 from faceoff.debug import debug
-from trueskill import Rating
+from trueskill import TrueSkill
 
 @use_db
 def find_match(db, **kwargs):
@@ -54,7 +54,7 @@ def get_league_ranking(db, league_id):
         FROM ranking 
         INNER JOIN user ON user.id=ranking.user_id
         WHERE ranking.league_id=? 
-        ORDER BY ranking.rank DESC
+        ORDER BY ranking.rank ASC
         """, [league_id])
 
 @use_db
@@ -72,38 +72,51 @@ def rebuild_rankings(db, league_id):
     # delete all existing rankings
     db.execute('DELETE FROM ranking WHERE league_id=?', [league_id])
 
+    skill = TrueSkill()
+
     # generate a local player ranking profile based on user id. all matches will 
     # be traversed and this object will be populated to build the rankings.
-    profiles = {}
+    players = {}
     for match in search_matches(db, league_id=league_id):
         w = match['winner_id']
-        if not profiles.has_key(w):
-            profiles[w] = {
-                'id': w, 'rank': 0, 'win': 0, 'loss': 0, 'win_streak': 0, 
-                'loss_streak': 0, 'games': 0}
         l = match['loser_id']
-        if not profiles.has_key(l):
-            profiles[l] = {
-                'id': l, 'rank': 0, 'win': 0, 'loss': 0, 'win_streak': 0, 
-                'loss_streak': 0, 'games': 0}
-        profiles[w]['games'] += 1
-        profiles[w]['win'] += 1
-        profiles[w]['win_streak'] += 1
-        profiles[w]['loss_streak'] = 0
-        profiles[l]['games'] += 1
-        profiles[l]['loss'] += 1
-        profiles[l]['win_streak'] = 0
-        profiles[l]['loss_streak'] += 1
+
+        # create ranking profile if hasn't been added yet
+        for p in [w, l]:
+            if not players.has_key(p):
+                players[p] = {
+                    'id': p, 'win': 0, 'loss': 0, 'win_streak': 0, 
+                    'loss_streak': 0, 'games': 0, 'rating': skill.Rating()}
+
+        # define ranking profile properties, this will go into the db and will
+        # be viewable on the standings page
+        players[w]['games'] += 1
+        players[w]['win'] += 1
+        players[w]['win_streak'] += 1
+        players[w]['loss_streak'] = 0
+        players[l]['games'] += 1
+        players[l]['loss'] += 1
+        players[l]['win_streak'] = 0
+        players[l]['loss_streak'] += 1
+
+        # finally, record the match with trueskill and let it calculate ranks
+        wr = players[w]['rating']
+        lr = players[l]['rating']
+        (wr, lr) = skill.transform_ratings([(wr,), (lr,)])
+        players[w]['rating'] = wr[0]
+        players[l]['rating'] = lr[0]
+
+    # sort the players based on their ranking
+    rankings = [p for p in players.values()]
+    rankings.sort(key=lambda p: p['rating'].mu-3*p['rating'].sigma)
+    rankings.reverse()
 
     # create rankings
-    for p in profiles.values():
+    for (i, r) in enumerate(rankings):
         db.execute(
-            'INSERT INTO ranking (league_id, user_id, rank, wins, losses, ' \
-                                 'win_streak, loss_streak, games) ' \
+            'INSERT INTO ranking (league_id, user_id, rank, wins, losses, win_streak, loss_streak, games) ' \
             'VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
-            [league_id, p['id'], p['rank'], p['win'], p['loss'], p['win_streak'], 
-             p['loss_streak'], p['games']]
-            )
+            [league_id, r['id'], (i+1), r['win'], r['loss'], r['win_streak'], r['loss_streak'], r['games']])
 
     if not db.is_building:
         db.commit()

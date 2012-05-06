@@ -1,0 +1,9 @@
+{% extends 'layouts/simple.html' %}
+{% set head_title='New League' %}
+{% set logo_url = url_for('landing') %}
+{% block content %}
+<div id='new-league'>
+    <h1>New League</h1>
+    {% include 'forms/new-league.html' %}
+</div>
+{% endblock %}

@@ -10,10 +10,10 @@ from time import localtime, strftime
 from flask import g, request, session, abort, redirect, url_for, send_from_directory
 from faceoff import app
 from faceoff.debug import debug
-from faceoff.forms import LoginForm, JoinForm, ReportForm
+from faceoff.forms import LoginForm, JoinForm, ReportForm, NewLeagueForm
 from faceoff.helpers.decorators import authenticated, templated
 from faceoff.models.user import get_active_users, create_user, auth_login, auth_logout
-from faceoff.models.league import find_league, get_active_leagues
+from faceoff.models.league import find_league, get_active_leagues, create_league
 from faceoff.models.match import create_match, get_match_history, get_league_ranking
 from faceoff.models.setting import get_setting
 
@@ -107,16 +107,25 @@ def join():
     form = JoinForm(request.form, access_code=get_setting('access_code'))
     if request.method != 'POST' or not form.validate():
         return dict(join_form=form)
-    else:
-        user_id = create_user(form.nickname.data, form.password.data)
-        session['user_id'] = user_id
-        return redirect(url_for('dashboard'))
+    user_id = create_user(form.nickname.data, form.password.data)
+    session['user_id'] = user_id
+    return redirect(url_for('landing'))
 
 @app.route('/')
 @templated()
 @authenticated
 def landing():
     return dict(active_leagues=get_active_leagues())
+
+@app.route('/new', methods=['GET', 'POST'])
+@templated()
+@authenticated
+def new_league():
+    form = NewLeagueForm(request.form)
+    if request.method != 'POST' or not form.validate():
+        return dict(new_league_form=form)
+    create_league(form.name.data) 
+    return redirect(url_for('landing'))
 
 @app.route('/<league>/')
 @templated()
