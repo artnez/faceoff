@@ -4,7 +4,7 @@ License: MIT, see LICENSE for details
 """
 
 from flask import Flask
-from faceoff import config, log, cache, db, fixtures, tpl
+from faceoff import config, log, cache, db, fixtures
 
 __all__ = ['app']
 

@@ -16,8 +16,12 @@ def search_leagues(db, **kwargs):
     return db.search('league', **kwargs)
 
 @use_db
+def get_all_leagues(db):
+    return search_leagues(db)
+
+@use_db
 def get_active_leagues(db):
-    return search_leagues(db, active=True)
+    return search_leagues(db, active=1)
 
 @use_db
 def create_league(db, name, slug=None, description=None, active=True):
@@ -28,14 +32,6 @@ def create_league(db, name, slug=None, description=None, active=True):
         description = description,
         active = '1' if active else '0',
         date_created = int(time())
-        )
-
-@use_db
-def add_league_member(db, league_id, user_id):
-    return db.insert(
-        'league_member',
-        user_id=user_id,
-        league_id=league_id
         )
 
 @use_db

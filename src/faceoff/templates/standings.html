@@ -1,27 +1,41 @@
-{% extends 'layouts/app.html' %}
-{% set head_title = 'Stats' %}
+{% extends 'layouts/league.html' %}
+{% set head_title = 'Standings' %}
 {% block content %}
 <div id='leaderboard' class='section'>
     <h2 class='center'><span>Leaderboard</span></h2>
+    {% if ranking | length %}
     <table class='table table-bordered table-striped'>
         <thead>
             <tr>
-                <th>Rank</th>
-                <th>Points</th>
-                <th>Player</th>
+                <th class='rank'>Rank</th>
+                <th class='nickname'>Nickname</th>
+                <th class='wins'>W</th>
+                <th class='losses'>L</th>
+                <th class='games'>GP</th>
+                <th class='streak'>STREAK</th>
             </tr>
         </thead>
         <tbody>
+            {% for rank in ranking %}
             <tr>
-                <td>1</td>
-                <td>1,234</td>
-                <td>artnez</td>
+                <td class='rank'>{{ loop.index }}</td>
+                <td class='nickname'>{{ rank.nickname }}</td>
+                <td class='wins'>{{ rank.wins }}</td>
+                <td class='losses'>{{ rank.losses }}</td>
+                <td class='games'>{{ rank.games }}</td>
+                <td class='streak'>
+                    {% if rank.win_streak %}
+                    WIN {{ rank.win_streak }}
+                    {% elif rank.loss_streak %}
+                    LOSS {{ rank.loss_streak }}
+                    {% endif %}
+                </td>
             </tr>
+            {% endfor %}
         </tbody>
     </table>
-</div>
-<div id='all-players' class='section'>
-    <h2 class='center'><span>All Players</span></h2>
-    <p>...</p>
+    {% else %}
+    <p class='search-empty'>No matches have been played.</p>
+    {% endif %}
 </div>
 {% endblock %}

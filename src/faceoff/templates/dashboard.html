@@ -1,12 +1,5 @@
-{% extends 'layouts/app.html' %}
+{% extends 'layouts/league.html' %}
 {% set head_title = 'Dashboard' %}
 {% block content %}
-<div class='row'>
-    <div class='span9'>
-        <p>abc</p>
-    </div>
-    <div class='span3'>
-        {% include 'forms/report.html' %}
-    </div>
-</div>
+{% include 'forms/report.html' %}
 {% endblock %}

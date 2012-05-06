@@ -13,7 +13,7 @@ Requirements
   - [jinja 2.6](http://jinja.pocoo.org/)
   - [werkzeug 0.8](http://werkzeug.pocoo.org/)
   - [wtforms 0.6](http://wtforms.simplecodes.com/)
-  - [scipy 0.10](http://www.scipy.org/)
+  - [trueskill 0.1](http://packages.python.org/trueskill/)
 
 ### Others
 

@@ -1,31 +1,22 @@
-<form id='report' class='form' action='{{ url_for('report') }}' method='post'>
-    <h3>Match Report</h3>
+<form id='report' class='form form-inline' action='{{ url_for('report') }}' method='post'>
+    <h3>Report a Match</h3>
     <fieldset>
-        <div class='opponent control-group'>
             <label class='control-label' for='{{ report_form.opponent.id }}'>{{ report_form.opponent.label.text }}</label>
-            <div class='controls'>
-                <select id='{{ report_form.opponent.id }}' name='{{ report_form.opponent.name }}' {% if report_form.opponent.length == 0 %}disabled{% endif %}>
-                    {%- for subfield in report_form.opponent if subfield.label.text != current_user.nickname %}
-                    <option value='{{ subfield.data }}'>{{ subfield.label }}</option>
-                    {% else %}
-                    <option value=''>- -</option>
-                    {%- endfor %}
-                </select>
-            </div>
-        </div>
-        <div class='result control-group'>
-            <label class='control-label'>{{ report_form.result.label.text }}</label>
-            <div class='control-group'>
-                {% for subfield in report_form.result %}
-                <label class='radio inline'>
-                    <input type='radio' id='{{ subfield.id }}' name='{{ subfield.name }}' value='{{ subfield.data }}' {% if subfield.data == '0' %}checked='checked'{% endif %} />
-                    {{ subfield.label }}
-                </label>
-                {% endfor %}
-            </div>
-        </div>
-        <div class='buttons'>
-            <button type='submit' class='btn btn-success'>Submit Report</button>
-        </div>
+            <select id='{{ report_form.opponent.id }}' class='span3' name='{{ report_form.opponent.name }}' {% if report_form.opponent.length == 0 %}disabled{% endif %}>
+                {%- for subfield in report_form.opponent if subfield.label.text != current_user.nickname %}
+                <option value='{{ subfield.data }}'>{{ subfield.label }}</option>
+                {% else %}
+                <option value=''>- -</option>
+                {%- endfor %}
+            </select>
+
+            <label class='control-label' for='{{ report_form.result.id }}'>{{ report_form.result.label.text }}</label>
+            <select id='{{ report_form.result.id }}' class='span2' name='{{ report_form.result.name }}'>
+                {%- for subfield in report_form.result %}
+                <option value='{{ subfield.data }}'>{{ subfield.label }}</option>
+                {%- endfor %}
+            </select>
+
+            <button type='submit' class='btn btn-success'>Submit</button>
     </fieldset>
 </form>

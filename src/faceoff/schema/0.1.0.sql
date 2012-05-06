@@ -32,12 +32,31 @@ CREATE TABLE league (
     active TINYINT(1) DEFAULT 1,
     date_created INT(11)
     );
-CREATE INDEX idx_league_name ON league (name);
+CREATE INDEX idx_league_slug ON league (slug);
 CREATE INDEX idx_league_newest ON league (date_created);
 
-CREATE TABLE league_member (
+CREATE TABLE match (
     id CHAR(32) PRIMARY KEY,
-    user_id CHAR(32),
-    league_id CHAR(32)
+    league_id CHAR(32),
+    winner_id CHAR(32),
+    winner_rank CHAR(32) DEFAULT NULL,
+    loser_id CHAR(32),
+    loser_rank CHAR(32) DEFAULT NULL,
+    date_created INT(11)
     );
-CREATE UNIQUE INDEX idx_user_league ON league_member(id, user_id, league_id);
+CREATE INDEX idx_match_newest ON match (date_created);
+CREATE INDEX idx_match_winner_loser ON match (winner_id, loser_id);
+CREATE INDEX idx_match_loser_winner ON match (loser_id, winner_id);
+
+CREATE TABLE ranking (
+    league_id CHAR(32),
+    user_id CHAR(32),
+    rank INT(4),
+    wins INT(5),
+    losses INT(5),
+    win_streak INT(5),
+    loss_streak INT(5),
+    games INT(6),
+    PRIMARY KEY (league_id, user_id)
+    );
+CREATE INDEX idx_ranking_league_best ON ranking (league_id, rank);

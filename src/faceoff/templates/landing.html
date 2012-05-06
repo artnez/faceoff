@@ -1,0 +1,18 @@
+{% extends 'layouts/simple.html' %}
+{% set head_title = 'League Selection' %}
+{% set logo_url = url_for('landing') %}
+{% block content %}
+<div id="landing">
+    <h1>Leagues</h1>
+    <ul class='leagues'>
+        {% for league in active_leagues %}
+        <li>
+            <a href='{{ url_for('dashboard', league=league.slug) }}'>{{ league.name }}</a>
+        </li>
+        {% endfor %}
+        <li class='create'>
+            <a href='{{ url_for('landing') }}'>New League</a>
+        </li>
+    </ul>
+</div>
+{% endblock %}

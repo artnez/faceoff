@@ -1,0 +1,92 @@
+/**
+ * Copyright: (c) 2012 Artem Nezvigin <artem@artnez.com>
+ * License: MIT, see LICENSE for details
+ */
+
+h1 {
+    display: none;
+}
+
+p.search-empty {
+    color: #999;
+    text-align: center;
+    font-style: italic;
+}
+
+#content .section {
+    margin: 0 0 40px 0;
+}
+
+#content .section h2.center {
+    color: #333;
+    text-align: center;
+    font-family: Georgia;
+    font-weight: normal;
+    font-style: italic;
+    background: url('../img/heading-bg-line.png') no-repeat 0 50%;
+    margin: 0 0 20px 0;
+}
+
+#content .section h2.center span {
+    background: #fff;
+    padding: 0 12px;
+}
+
+#report {
+    background: #eee;
+    padding: 14px 20px;
+    text-align: center;
+    margin: -10px 0 25px 0;
+}
+
+#report h3 {
+    display: none;
+}
+
+#report .control-label {
+    font-size: 18px;
+    margin: 0;
+    position: relative;
+    top: 2px;
+    padding: 0 4px;
+}
+
+#report .btn {
+    margin-left: 12px;
+}
+
+table.match-history {
+}
+
+table.match-history thead tr th {
+    font-size: 16px;
+}
+
+table.match-history thead tr th.winner,
+table.match-history tbody tr td.winner {
+    width: 150px;
+    text-align: right;
+}
+
+table.match-history thead tr th.versus,
+table.match-history tbody tr td.versus {
+    width: 20px;
+    text-align: center;
+}
+
+table.match-history thead tr th.loser,
+table.match-history tbody tr td.loser {
+    width: 150px;
+}
+
+table.match-history tbody tr td.winner .rank,
+table.match-history tbody tr td.loser .rank {
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 11px;
+    color: #999;
+}
+
+table.match-history tbody tr td.date {
+    font-size: 12px;
+}

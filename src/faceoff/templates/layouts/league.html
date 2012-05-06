@@ -1,15 +1,16 @@
 {% extends 'layouts/base.html' %}
 
 {% block stylesheet -%}
-<link rel='stylesheet' media='screen' href='{{ url_for('static', filename='css/faceoff.app.css') }}'>
+<link rel='stylesheet' media='screen' href='{{ url_for('static', filename='css/faceoff.simple.css') }}'>
+<link rel='stylesheet' media='screen' href='{{ url_for('static', filename='css/faceoff.league.css') }}'>
 {%- endblock %}
 
 {%- block body %}
 <div class='container'>
     <div id='header' class='clearfix'>
-        <strong class='title'><a href='{{ url_for('landing') }}'>Faceoff</a></strong>
-        <strong class='subtitle'>{{ current_league.name }}</strong>
-
+        <strong class='title'><a href='{{ url_for('dashboard') }}'>{{ current_league.name }}</a></strong>
+    </div>
+    <div id='nav'>
         <h3>League Menu</h3>
         {%- set pages = [
             {'title': 'Dashboard', 'endpoint': 'dashboard'},
@@ -24,21 +25,20 @@
                 {%- if request.endpoint == page.endpoint %}</strong>{% endif -%}
             </li>
             {% endfor -%}
-            <li><a id='logout' data-confirm='Are you sure you want to logout?' href='{{ url_for('logout') }}'>Logout</a></li>
-        </ul>
-
-        <h3>Other Leagues</h3>
-        <ul class='switch'>
-            {%- for active_league in active_leagues if current_league.slug != active_league.slug %}
-            <li><a href='{{ url_for('dashboard', league=active_league.slug) }}'>{{ active_league.name }}</a></li>
-            {%- endfor %}
         </ul>
     </div>
+    {% if current_user %}
+    <div id='extra-nav'>
+        <h3>Other Stuff</h3>
+        <ul class='menu'>
+            <li><a href='{{ url_for('landing') }}'>other leagues</a></li>
+            <li><a href='{{ url_for('logout') }}' data-confirm='Are you sure you want to logout?'>logout</a></li>
+        </ul>
+    </div>
+    {% endif %}
     <div id='content'>
-<!-- CONTENT START -->
-<h1>{{ page_title or head_title }}</h1>
-{% block content %}{% endblock %}
-<!-- CONTENT END -->
+        <h1>{{ page_title or head_title }}</h1>
+        {% block content %}{% endblock %}
     </div>
 </div>
 {% endblock %}

@@ -1,0 +1,171 @@
+/**
+ * Copyright: (c) 2012 Artem Nezvigin <artem@artnez.com>
+ * License: MIT, see LICENSE for details
+ */
+
+h1 {
+    text-transform: lowercase;
+    margin: 0 0 20px 0;
+}
+
+h2 {
+    text-transform: lowercase;
+    margin: 0 0 10px 0;
+}
+
+.container {
+    position: relative;
+    margin: 30px auto 20px auto;
+}
+
+#header {
+    color: #fff;
+    font-size: 34px;
+    line-height: 34px;
+    text-align: center;
+    background: #333;
+    margin: 0 0 25px 0;
+}
+
+#header .title {
+    display: inline-block;
+}
+
+#header .title a {
+    display: block;
+    color: #fff;
+    padding: 20px 0;
+    text-decoration: none;
+    text-shadow: 1px 1px 0 #000;
+    text-transform: uppercase;
+}
+
+#nav {
+    background: #333;
+    margin: -25px 0 25px 0;
+}
+
+#nav h3 {
+    display: none;
+}
+
+#nav ul.menu {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    text-align: center;
+}
+
+#nav ul.menu li, 
+#nav ul.menu li a {
+    margin: 0;
+    padding: 0;
+}
+
+#nav ul.menu li {
+    display: inline-block;
+    margin: 0;
+}
+
+#nav ul.menu li a {
+    display: inline-block;
+    color: #333;
+    font-weight: bold;
+    text-transform: uppercase;
+    background: #777;
+    padding: 4px 8px;
+    text-decoration: none;
+}
+
+#nav ul.menu li:hover a {
+    background: #aaa;
+}
+
+#nav ul.menu li.selected a {
+    background: #fff;
+}
+
+#extra-nav {
+    position: absolute;
+    top: -22px;
+    right: 0;
+}
+
+#extra-nav h3 {
+    display: none;
+}
+
+#extra-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#extra-nav ul li {
+    float: left;
+    padding: 0 0 0 14px;
+    margin: 0 0 0 8px;
+    background: url('../img/bullet-cccccc.png') no-repeat 0 50%;
+}
+
+#extra-nav ul li:first-child {
+    background: none;
+}
+
+#gate h1 {
+    display: none;
+}
+
+#landing h1 {
+    margin: 0 0 10px 0;
+}
+
+#landing ul.leagues {
+    width: 100%;
+    overflow: hidden;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+}
+
+#landing ul.leagues li {
+    position: relative;
+    float: left;
+    width: 173px;
+    height: 75px;
+    margin: 0 6px 6px 0;
+    padding: 0;
+    background: #333;
+}
+
+#landing ul.leagues li:nth-child(3n) {
+    margin-right: 0;
+}
+
+#landing ul.leagues li a {
+    display: block;
+    font-size: 18px;
+    height: 100%;
+    line-height: 75px;
+    color: #fff;
+    background: #069;
+    text-align: center;
+}
+
+#landing ul.leagues li a:hover {
+    text-decoration: none;
+    background: #005580;
+}
+
+#landing ul.leagues li.create a {
+    color: #999;
+    background: #ddd;
+    line-height: 72px;
+    text-shadow: 1px 1px 0 #eee;
+    text-transform: lowercase;
+}
+
+#landing ul.leagues li .name {
+    display: block;
+    padding: 20px 8px 2px 8px;
+}

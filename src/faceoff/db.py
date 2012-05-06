@@ -8,8 +8,8 @@ import re
 import sqlite3 
 import atexit
 import string # pylint:disable=W0402
+import logging
 from threading import current_thread
-from logging import getLogger, debug
 from tempfile import gettempdir
 from contextlib import closing
 from glob import glob
@@ -19,6 +19,7 @@ from random import random, shuffle
 from time import time
 from natsort import natsort
 from functools import wraps
+from faceoff.debug import debug
 
 _curdir = os.path.dirname(__file__)
 _schema = os.path.join(_curdir, 'schema')
@@ -102,7 +103,7 @@ def logger(name='db.general'):
     """ 
     Log into the internal database logger. 
     """
-    return getLogger(name)
+    return logging.getLogger(name)
 
 def use_db(f):
     """
@@ -183,6 +184,7 @@ class Connection(sqlite3.Connection):
     def __init__(self, *args, **kwargs):
         self.ident = self._ident(args[0])
         self._log('connect %s' % args[0])
+        self.is_building = False
         sqlite3.Connection.__init__(self, *args, **kwargs)
 
     def find(self, table, pk=None, sort=None, order=None, **where):
@@ -203,9 +205,16 @@ class Connection(sqlite3.Connection):
         query = 'SELECT * FROM "%s"' % self.clean(table)
         param = []
         if len(where):
-            fields = ['"%s"=?' % self.clean(name) for name in where.keys()]
+            fields = []
+            for name, value in where.iteritems():
+                name = self.clean(name)
+                if isinstance(value, list):
+                    values = '","'.join(value)
+                    fields.append('"%s" IN ("%s")' % (name, values))
+                else:
+                    fields.append('"%s"=?' % name)
+                    param.append(value)
             query += ' WHERE ' + ' AND '.join(fields)
-            param.extend(where.values())
         if sort is not None:
             sort = self.clean(sort)
             if order != 'asc': 
@@ -250,6 +259,16 @@ class Connection(sqlite3.Connection):
         Deletes a record by primary key `pk` on the given `table`.
         """
         self.execute('DELETE FROM "%s" WHERE "id"=?' % table, [pk])
+
+    def select(self, query, param):
+        """
+        Runs a select query and returns the entire result set.
+        """
+        cursor = self.execute(query, param)
+        rows = []
+        [rows.append(dict(zip(row.keys(), row))) for row in cursor.fetchall()]
+        cursor.close()
+        return rows
 
     def truncate_table(self, table):
         """

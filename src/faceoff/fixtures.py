@@ -10,8 +10,9 @@ from logging import getLogger, debug
 from random import choice, shuffle, randint
 from jinja2.utils import generate_lorem_ipsum
 import json
-from faceoff.models.user import create_user, get_all_users
-from faceoff.models.league import create_league, add_league_member
+from faceoff.models.user import create_user, get_active_users
+from faceoff.models.league import create_league, get_all_leagues, get_active_leagues
+from faceoff.models.match import create_match, rebuild_rankings
 from faceoff.models.setting import set_setting
 
 _logger = None
@@ -37,7 +38,9 @@ HUMAN_NAMES = [
 
 GAME_NAMES = [
     'Table Tennis', 'Chess', 'Thumb Wrestling', 'Foosball', 'Boxing', 
-    'Checkers', 'Scrabble', 'Poker'
+    'Checkers', 'Scrabble', 'Poker', 'Billiards', 'Basketball', 'Flag Football',
+    'Horseshoes', 'Backgammon', 'Shuffleboard', 'Archery', 'Air Hockey', 
+    'Bowling', 'Tetris', 'Street Fighter'
     ]
 
 COMPANY_NAMES = [
@@ -61,11 +64,16 @@ def generate_full_db(db, truncate=False):
     object. If truncate is set to True, all existing data will be removed.
     """
     logger().info('generating full db')
-    db.execute('begin')
+    db.execute('begin exclusive')
+    db.is_building = True
+    generate_settings(db)
     generate_users(db, truncate=truncate)
     generate_leagues(db, truncate=truncate)
-    generate_settings(db)
+    generate_matches(db, truncate=truncate)
     db.commit()
+    logger().info('rebuilding rankings...')
+    [rebuild_rankings(db, league['id']) for league in get_all_leagues(db)]
+    db.is_building = False
 
 def generate_users(db, min_count=8, max_count=25, truncate=False):
     """
@@ -79,7 +87,7 @@ def generate_users(db, min_count=8, max_count=25, truncate=False):
     users = []
     for user in rand_users(min_count, max_count):
         users.append(create_user(db=db, **user))
-    logger().info('created %d users (%s)' % (len(users), ','.join(users)))
+    logger().info('created %d users' % len(users))
     return users
 
 def generate_leagues(db, min_count=4, max_count=10, truncate=False):
@@ -92,14 +100,10 @@ def generate_leagues(db, min_count=4, max_count=10, truncate=False):
     if truncate:
         db.truncate_table('league')
     leagues = []
-    users = get_all_users(db=db)
     for league in rand_leagues(min_count, max_count):
         league_id = create_league(db=db, **league)
         leagues.append(league_id)
-        for user in users:
-            if randint(0, 2) == 2:
-                add_league_member(league_id, user['id'], db=db)
-    logger().info('created %d leagues (%s)' % (len(leagues), ','.join(leagues)))
+    logger().info('created %d leagues' % len(leagues))
     return leagues
 
 def generate_settings(db):
@@ -107,6 +111,22 @@ def generate_settings(db):
     Generates default application settings.
     """
     set_setting('access_code', 'letmeplay', db=db)
+
+def generate_matches(db, truncate=False):
+    """
+    Generates new matches between players in a league.
+    """
+    logger().info('creating matches')
+    if truncate:
+        db.truncate_table('match')
+    users = get_active_users(db)
+    leagues = get_active_leagues(db)
+    for league in leagues:
+        for i in range(randint(0, 50)):
+            shuffle(users)
+            winner = users[0]['id']
+            loser = users[1]['id']
+            create_match(db, league['id'], winner, loser)
 
 def rand_users(min_count=3, max_count=10):
     """

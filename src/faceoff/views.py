@@ -5,6 +5,8 @@ License: MIT, see LICENSE for details
 
 import os
 import logging
+from datetime import datetime
+from time import localtime, strftime
 from flask import g, request, session, abort, redirect, url_for, send_from_directory
 from faceoff import app
 from faceoff.debug import debug
@@ -12,12 +14,8 @@ from faceoff.forms import LoginForm, JoinForm, ReportForm
 from faceoff.helpers.decorators import authenticated, templated
 from faceoff.models.user import get_active_users, create_user, auth_login, auth_logout
 from faceoff.models.league import find_league, get_active_leagues
+from faceoff.models.match import create_match, get_match_history, get_league_ranking
 from faceoff.models.setting import get_setting
-
-#g.active_users = get_active_users()
-#g.current_league = current_league
-#g.active_leagues = get_active_leagues()
-#g.report_form = ReportForm(g.active_users)
 
 @app.teardown_request
 def db_close(exception): # pylint:disable=W0613
@@ -48,6 +46,33 @@ def inject_template_data():
     if hasattr(g, 'current_league'):
         d['current_league'] = g.current_league
     return d
+
+@app.template_filter('date_format')
+def date_format(s, f):
+    return strftime(f, localtime(int(s)))
+
+@app.template_filter('player_rank')
+def player_rank(r):
+    return '---' if r is None else '%03d' % int(r)
+
+@app.template_filter('human_date')
+def human_date(s):
+    d = datetime.fromtimestamp(s)
+    n = datetime.today()
+    if d.date() == n.date():
+        return 'today @ %s' % d.strftime('%-I:%M %p').lower()
+    x = n - d
+    if x.days == 1:
+        return 'yesterday @ %s' % d.strftime('%-I:%M %p').lower()
+    if d.year == n.year:
+        return d.strftime('%a, %b %-d'+date_suffix(d.day)) + \
+               d.strftime(' @ %-I%p').lower()
+    return d.strftime('%b %-d'+date_suffix(d.day)+', %Y')+ \
+           d.strftime(' @ %-I%p').lower()
+
+@app.template_filter('date_suffix')
+def date_suffix(d):
+    return 'th' if 11 <= d <= 13 else {1:'st', 2:'nd', 3:'rd'}.get(d % 10, 'th')
 
 @app.route('/favicon.ico')
 def favicon():
@@ -88,18 +113,16 @@ def join():
         return redirect(url_for('dashboard'))
 
 @app.route('/')
+@templated()
 @authenticated
 def landing():
-    return 'blah'
+    return dict(active_leagues=get_active_leagues())
 
 @app.route('/<league>/')
 @templated()
 @authenticated
 def dashboard():
-    return dict(
-        active_leagues = get_active_leagues(),
-        report_form = ReportForm(get_active_users())
-        )
+    return dict(report_form = ReportForm(get_active_users()))
 
 @app.route('/<league>/report', methods=('POST',))
 @templated()
@@ -108,16 +131,21 @@ def report():
     form = ReportForm(get_active_users(), request.form)
     if not form.validate():
         return dict(form=form)
+    is_win = form.result.data == '1'
+    cur_user = g.current_user['id']
+    opp_user = form.opponent.data
+    (winner, loser) = (cur_user, opp_user) if is_win else (opp_user, cur_user)
+    create_match(g.current_league['id'], winner, loser)
     return redirect(url_for('dashboard'))
 
 @app.route('/<league>/standings/')
 @templated()
 @authenticated
 def standings():
-    pass
+    return dict(ranking=get_league_ranking(g.current_league['id']))
 
 @app.route('/<league>/history/')
 @templated()
 @authenticated
 def history():
-    pass
+    return dict(match_history=get_match_history(g.current_league['id']))

@@ -1,5 +1,30 @@
-{% extends 'layouts/app.html' %}
-{% set head_title = 'Stats' %}
+{% extends 'layouts/league.html' %}
+{% set head_title = 'History' %}
 {% block content %}
-<h2 class='center'><span>History</span></h2>
+<div class='section'>
+    <h2 class='center'><span>Recent Matches</span></h2>
+    {% if match_history | length %}
+    <table class='table table-bordered table-striped match-history'>
+        <thead>
+            <tr>
+                <th class='winner'>Winner</th>
+                <th class='versus'>vs.</th>
+                <th class='loser'>Loser</th>
+                <th class='date'>Date Played</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for match in match_history %}
+            <tr>
+                <td class='winner'>{{ match['winner_nickname'] }} <span class='rank'>{{ match['winner_rank']|player_rank }}</span></td><td class='versus'>vs.</td>
+                <td class='loser'><span class='rank'>{{ match['loser_rank']|player_rank }}</span> {{ match['loser_nickname'] }}</td>
+                <td class='date'>{{ match['date_created']|human_date() }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class='search-empty'>No matches have been played.</p>
+    {% endif %}
+</div>
 {% endblock %}

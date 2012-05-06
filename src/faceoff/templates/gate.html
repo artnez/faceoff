@@ -1,16 +1,16 @@
-{% extends 'layouts/gate.html' %}
+{% extends 'layouts/simple.html' %}
 
 {% set head_title='Gate' %}
 
 {% block content %}
-<div class='row'>
-    <div class='span3'>
-        <h2>login</h2>
+<div id='gate' class='row'>
+    <h1>Login or Register</h1>
+    <div class='span6'>
+        <h2>Login</h2>
         {% include 'forms/login.html' %}
     </div>
-    <div class='separator'></div>
-    <div class='span3'>
-        <h2>join</h2>
+    <div class='span6'>
+        <h2>Join</h2>
         {% include 'forms/join.html' %}
     </div>
 </div>
