@@ -18,7 +18,7 @@ def init_app(app, name=''):
     del app.logger.handlers[:]
 
     log_path = app.config['LOG_PATH']
-    log_level = app.config['LOG_LEVEL']
+    log_level = app.config['LOG_LEVEL'] or ''
     log_filter = app.config['LOG_FILTER']
     log_ignore = app.config['LOG_IGNORE']
 
