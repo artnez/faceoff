@@ -11,4 +11,12 @@ jQuery(function($) {
     $('#logout').click(function() {
         return confirm($(this).attr('data-confirm'));
     });
+
+    // report form
+    $('#report').submit(function() {
+        $(this).find('button[type=submit]').attr('disabled', true);
+    });
+    setTimeout(function() {
+        $('#report button[type=submit]').attr('disabled', false);
+    }, 2000);
 });
