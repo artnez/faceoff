@@ -4,7 +4,7 @@
 <div id='leaderboard' class='section'>
     <h2 class='center'><span>Leaderboard</span></h2>
     {% if ranking | length %}
-    <table class='table table-bordered table-striped'>
+    <table class='table table-bordered table-striped standings'>
         <thead>
             <tr>
                 <th class='rank'>Rank</th>
@@ -12,12 +12,12 @@
                 <th class='wins'>W</th>
                 <th class='losses'>L</th>
                 <th class='games'>GP</th>
-                <th class='streak'>STREAK</th>
+                <th class='streak'>ST</th>
             </tr>
         </thead>
         <tbody>
             {% for rank in ranking %}
-            <tr>
+            <tr {% if rank.user_id == current_user.id %}class="highlight"{% endif %}>
                 <td class='rank'>{{ loop.index }}</td>
                 <td class='nickname'>{{ rank.nickname }}</td>
                 <td class='wins'>{{ rank.wins }}</td>
@@ -25,9 +25,9 @@
                 <td class='games'>{{ rank.games }}</td>
                 <td class='streak'>
                     {% if rank.win_streak %}
-                    WIN {{ rank.win_streak }}
+                    <span class='good'>+{{ rank.win_streak }}</span>
                     {% elif rank.loss_streak %}
-                    LOSS {{ rank.loss_streak }}
+                    <span class='bad'>-{{ rank.loss_streak }}</span>
                     {% endif %}
                 </td>
             </tr>

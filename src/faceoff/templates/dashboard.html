@@ -2,4 +2,70 @@
 {% set head_title = 'Dashboard' %}
 {% block content %}
 {% include 'forms/report.html' %}
+<div id='profile'>
+    <p class='rank'>
+        <span class='player'>
+            {% if current_ranking %}
+            {{ current_ranking.rank }}<sup>{{ current_ranking.rank|num_suffix }}</sup>
+            {% else %}?{% endif %}
+        </span>
+        <span class='total'>{{ ranking|length }} players</span>
+    </p>
+    {% if current_ranking %}
+    <div class='stats'>
+        <p><span>{{ current_ranking.wins }}</span><label>wins</label></p>
+        <p><span>{{ current_ranking.losses }}</span><label>losses</label></p>
+        <p>
+            {% if current_ranking.win_streak %}
+            <span class='good'>+{{ current_ranking.win_streak }}</span>
+            {% else %}
+            <span class='bad'>-{{ current_ranking.loss_streak }}</span>
+            {% endif %}
+            <label>streak</label>
+        </p>
+        <p><span>{{ current_ranking.games }}</span><label>games</label></p>
+    </div>
+    <div class='blurb'></div>
+    {% else %}
+    <div class='stats'>
+        <p><span>n/a</span><label>wins</label></p>
+        <p><span>n/a</span><label>losses</label></p>
+        <p><span>n/a</span><label>streak</label></p>
+        <p><span>n/a</span><label>games</label></p>
+    </div>
+    <div class='blurb'>
+        You have not played any games in this league. To join the league, just 
+        play a game and make sure it gets reported by you or your opponent.
+    </div>
+    {% endif %}
+</div>
+
+{% if history | length %}
+<div class='section'>
+    <h2 class='center'><span>Recently Played</span></h2>
+    <table class='table table-bordered table-striped user-history'>
+        <thead>
+            <tr>
+                <th class='opponent'>Opponent</th>
+                <th class='result'>Result</th>
+                <th class='date'>Date Played</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for match in history %}
+            <tr>
+                {% if match.winner_id == current_user.id %}
+                <td class='opponent'><span class='rank'>{{ match.loser_rank|player_rank }}</span> {{ match.loser_nickname }}</td>
+                <td class='result'><span class='good'>win</span></td>
+                {% else %}
+                <td class='opponent'><span class='rank'>{{ match.winner_rank|player_rank }}</span> {{ match.winner_nickname }}</td>
+                <td class='result'><span class='bad'>loss</span></td>
+                {% endif %}
+                <td class='date'>{{ match['date_created']|human_date() }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
 {% endblock %}

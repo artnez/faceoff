@@ -18,7 +18,8 @@ def search_matches(db, **kwargs):
     return db.search('match', **kwargs)
 
 @use_db
-def get_match_history(db, league_id, start=0, count=100):
+def get_match_history(db, league_id, user_id=None, start=0, count=100):
+    params = [league_id]
     query = """
         SELECT 
             match.*, winner.id AS winner_id, winner.nickname AS winner_nickname, 
@@ -27,10 +28,14 @@ def get_match_history(db, league_id, start=0, count=100):
         INNER JOIN user AS winner ON winner.id = match.winner_id
         INNER JOIN user AS loser ON loser.id = match.loser_id
         WHERE match.league_id=? 
-        ORDER BY match.date_created DESC
-        LIMIT %d, %d
-        """ % (start, count)
-    return db.select(query, [league_id])
+        """
+    if user_id is not None:
+        query += " AND (winner.id=? OR loser.id=?) "
+        params.extend([user_id, user_id])
+    query += ' ORDER BY match.date_created DESC '
+    if count is not None:
+        query += ' LIMIT %d, %d ' % (start, count)
+    return db.select(query, params)
 
 @use_db
 def create_match(db, league_id, winner_user_id, loser_user_id, norebuild=False):
@@ -61,6 +66,10 @@ def get_league_ranking(db, league_id):
 def get_user_rank(db, league_id, user_id):
     rank = db.find('ranking', league_id=league_id, user_id=user_id)
     return None if rank is None else rank['rank']
+
+@use_db
+def get_user_standing(db, league_id, user_id):
+    return db.find('ranking', league_id=league_id, user_id=user_id)
 
 @use_db
 def rebuild_rankings(db, league_id):

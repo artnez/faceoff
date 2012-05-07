@@ -1,7 +1,0 @@
-{% from 'macros/form.html' import render_field %}
-<form id='new_league' action='{{ url_for('new_league') }}' method='post'>
-    <fieldset>
-        {{ render_field(new_league_form.name, errpos='inline') }}
-        <button type='submit' class='btn btn-large'>Create League</button>
-    </fieldset>
-</form>

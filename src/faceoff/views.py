@@ -14,7 +14,7 @@ from faceoff.forms import LoginForm, JoinForm, ReportForm, NewLeagueForm
 from faceoff.helpers.decorators import authenticated, templated
 from faceoff.models.user import get_active_users, create_user, auth_login, auth_logout
 from faceoff.models.league import find_league, get_active_leagues, create_league
-from faceoff.models.match import create_match, get_match_history, get_league_ranking
+from faceoff.models.match import create_match, get_match_history, get_league_ranking, get_user_standing
 from faceoff.models.setting import get_setting
 
 @app.teardown_request
@@ -65,13 +65,13 @@ def human_date(s):
     if x.days == 1:
         return 'yesterday @ %s' % d.strftime('%-I:%M %p').lower()
     if d.year == n.year:
-        return d.strftime('%a, %b %-d'+date_suffix(d.day)) + \
+        return d.strftime('%a, %b %-d'+num_suffix(d.day)) + \
                d.strftime(' @ %-I%p').lower()
-    return d.strftime('%b %-d'+date_suffix(d.day)+', %Y')+ \
+    return d.strftime('%b %-d'+num_suffix(d.day)+', %Y')+ \
            d.strftime(' @ %-I%p').lower()
 
-@app.template_filter('date_suffix')
-def date_suffix(d):
+@app.template_filter('num_suffix')
+def num_suffix(d):
     return 'th' if 11 <= d <= 13 else {1:'st', 2:'nd', 3:'rd'}.get(d % 10, 'th')
 
 @app.route('/favicon.ico')
@@ -131,7 +131,14 @@ def new_league():
 @templated()
 @authenticated
 def dashboard():
-    return dict(report_form = ReportForm(get_active_users()))
+    user = g.current_user
+    league = g.current_league
+    return dict(
+        report_form = ReportForm(get_active_users()),
+        current_ranking = get_user_standing(league['id'], user['id']),
+        ranking=get_league_ranking(league['id']),
+        history=get_match_history(league['id'], user_id=user['id'])
+        )
 
 @app.route('/<league>/report', methods=('POST',))
 @templated()

@@ -116,12 +116,12 @@ def generate_matches(db, truncate=False):
     """
     Generates new matches between players in a league.
     """
-    logger().info('creating matches')
     if truncate:
         db.truncate_table('match')
     users = get_active_users(db)
     leagues = get_active_leagues(db)
     for league in leagues:
+        logger().info('creating matches for league: %s' % league['name'])
         for i in range(randint(0, 50)):
             shuffle(users)
             winner = users[0]['id']

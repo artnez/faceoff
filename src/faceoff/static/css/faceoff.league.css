@@ -36,7 +36,7 @@ p.search-empty {
     background: #eee;
     padding: 14px 20px;
     text-align: center;
-    margin: -10px 0 25px 0;
+    margin: -10px 0 15px 0;
 }
 
 #report h3 {
@@ -55,8 +55,7 @@ p.search-empty {
     margin-left: 12px;
 }
 
-table.match-history {
-}
+table.match-history {}
 
 table.match-history thead tr th {
     font-size: 16px;
@@ -89,4 +88,176 @@ table.match-history tbody tr td.loser .rank {
 
 table.match-history tbody tr td.date {
     font-size: 12px;
+}
+
+table.user-history {}
+
+table.user-history thead tr th {
+    font-size: 16px;
+}
+
+table.user-history tbody tr td.opponent .rank,
+table.user-history tbody tr td.opponent .rank {
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 11px;
+    color: #999;
+}
+
+table.user-history thead tr th.result,
+table.user-history tbody tr td.result {
+    width: 75px;
+    text-align: center;
+}
+
+table.user-history tbody tr td.result .good {
+    color: green;
+}
+
+table.user-history tbody tr td.result .bad {
+    color: #cc0000;
+}
+
+table.user-history thead tr th.date,
+table.user-history tbody tr td.date {
+    width: 140px;
+}
+
+table.standings {}
+
+table.standings thead tr th.rank,
+table.standings tbody tr td.rank {
+    width: 30px;
+    text-align: center;
+}
+
+table.standings thead tr th.nickname,
+table.standings tbody tr td.nickname {}
+
+table.standings thead tr th.wins,
+table.standings tbody tr td.wins {
+    width: 40px;
+    text-align: center;
+}
+
+table.standings thead tr th.losses,
+table.standings tbody tr td.losses {
+    width: 40px;
+    text-align: center;
+}
+
+table.standings thead tr th.games,
+table.standings tbody tr td.games {
+    width: 40px;
+    text-align: center;
+}
+
+table.standings thead tr th.streak,
+table.standings tbody tr td.streak {
+    width: 40px;
+    text-align: center;
+}
+
+table.standings tbody tr td.streak span.good {
+    color: green;
+}
+
+table.standings tbody tr td.streak span.bad {
+    color: #cc0000;
+}
+
+table.standings tbody tr.highlight td {
+    background: #fcf8e3;
+    font-weight: bold;
+}
+
+#profile {
+    width: 100%;
+    overflow: hidden;
+    margin: 0 0 30px 0;
+}
+
+#profile h2 {
+    font-size: 44px;
+    line-height: 1;
+}
+
+#profile p.rank {
+    float: left;
+    width: 150px;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 1px 1px 0 #fff;
+    background: #eee;
+    padding: 10px 0 20px 0;
+    margin: 0 10px 0 0;
+    line-height: 1;
+}
+
+#profile p.rank .player {
+    display: block;
+    font-size: 84px;
+}
+
+#profile p.rank .player sup {
+    font-size: 26px;
+    vertical-align: super;
+    line-height: 8px;
+}
+
+#profile p.rank .total {
+    display: block;
+    font-size: 16px;
+    border-top: solid #ccc 1px;
+    margin: 0 25px;
+    padding: 8px 0 0 0;
+}
+
+#profile .stats {
+    float: left;
+    width: 152px;
+    height: 139px;
+}
+
+#profile .stats p {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+}
+
+#profile .stats p span {
+    float: left;
+    background: #eee;
+    width: 34px;
+    padding: 8px 0;
+    text-align: center;
+    margin: 0 0 9px 0;
+    font-weight: bold;
+}
+
+#profile .stats p span.good {
+    color: green;
+}
+
+#profile .stats p span.bad {
+    color: #cc0000;
+}
+
+#profile .stats p label {
+    float: left;
+    width: 100px;
+    line-height: 1;
+    background: #ddd;
+    margin: 0;
+    padding: 8px 0 8px 8px;
+}
+
+#profile .blurb {
+    float: left;
+    width: 220px;
+    height: 140px;
 }
