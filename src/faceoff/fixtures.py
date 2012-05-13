@@ -6,10 +6,13 @@ License: MIT, see LICENSE for details
 """
 
 import os
+import json
+from math import ceil
+from time import mktime
+from datetime import datetime, timedelta
 from logging import getLogger, debug
 from random import choice, shuffle, randint
 from jinja2.utils import generate_lorem_ipsum
-import json
 from faceoff.models.user import create_user, get_active_users
 from faceoff.models.league import create_league, get_all_leagues, get_active_leagues
 from faceoff.models.match import create_match, rebuild_rankings
@@ -75,7 +78,7 @@ def generate_full_db(db, truncate=False):
     [rebuild_rankings(db, league['id']) for league in get_all_leagues(db)]
     db.is_building = False
 
-def generate_users(db, min_count=8, max_count=25, truncate=False):
+def generate_users(db, min_count=4, max_count=12, truncate=False):
     """
     Generates a random amount of users into the given database connection
     object. The amount of users will fall between `min_count` and `max_count`. 
@@ -85,12 +88,12 @@ def generate_users(db, min_count=8, max_count=25, truncate=False):
     if truncate:
         db.truncate_table('user')
     users = []
-    for user in rand_users(min_count, max_count):
+    for user in rand_users(min_count=min_count, max_count=max_count):
         users.append(create_user(db=db, **user))
     logger().info('created %d users' % len(users))
     return users
 
-def generate_leagues(db, min_count=4, max_count=10, truncate=False):
+def generate_leagues(db, min_count=2, max_count=6, truncate=False):
     """
     Generates a random amount of leagues into the given database connection
     object. The amount of leagues will fall between `min_count` and `max_count`. 
@@ -122,13 +125,20 @@ def generate_matches(db, truncate=False):
     leagues = get_active_leagues(db)
     for league in leagues:
         logger().info('creating matches for league: %s' % league['name'])
-        for i in range(randint(0, 50)):
+        matches = []
+        for i in range(randint(0, 25)):
             shuffle(users)
             winner = users[0]['id']
             loser = users[1]['id']
-            create_match(db, league['id'], winner, loser)
+            matches.append([league, winner, loser])
+        match_date = datetime.now() - timedelta(days=100)
+        diff_hours = round(100.0/len(matches), 2)
+        for match in matches:
+            match_date = match_date + timedelta(hours=diff_hours*24)
+            match_time = mktime(match_date.timetuple())
+            create_match(db, match[0]['id'], match[1], match[2], match_date=match_time)
 
-def rand_users(min_count=3, max_count=10):
+def rand_users(min_count, max_count):
     """
     Returns a list of random objects that map the properties of a user record.
     """

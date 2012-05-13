@@ -38,7 +38,7 @@ def get_match_history(db, league_id, user_id=None, start=0, count=100):
     return db.select(query, params)
 
 @use_db
-def create_match(db, league_id, winner_user_id, loser_user_id, norebuild=False):
+def create_match(db, league_id, winner_user_id, loser_user_id, match_date=None, norebuild=False):
     match_id = db.insert(
         'match',
         league_id = league_id,
@@ -46,7 +46,7 @@ def create_match(db, league_id, winner_user_id, loser_user_id, norebuild=False):
         winner_rank = get_user_rank(db, league_id, winner_user_id),
         loser_id = loser_user_id,
         loser_rank = get_user_rank(db, league_id, loser_user_id),
-        date_created = int(time())
+        date_created = int(time()) if match_date is None else match_date
         )
     if not norebuild:
         rebuild_rankings(db, league_id)
