@@ -63,6 +63,7 @@ def auth_login(db, session, nickname, password):
     if password != user['password']:
         return False
     session['user_id'] = user['id'] 
+    session.permanent = True 
     return True
 
 def auth_logout(session):
