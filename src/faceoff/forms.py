@@ -70,3 +70,10 @@ class NewLeagueForm(Form):
         id='name',
         validators=[Required(), Length(2), NoneOf(['new'], values_formatter=lambda v: map(str.lower, v))]
         )
+
+class SettingsForm(Form):
+    name = TextField(
+        label='League Name', 
+        id='name',
+        validators=[Required(), Length(2), NoneOf(['new'], values_formatter=lambda v: map(str.lower, v))]
+        )

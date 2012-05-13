@@ -10,10 +10,10 @@ from time import localtime, strftime
 from flask import g, request, session, abort, redirect, url_for, send_from_directory
 from faceoff import app
 from faceoff.debug import debug
-from faceoff.forms import LoginForm, JoinForm, ReportForm, NewLeagueForm
+from faceoff.forms import LoginForm, JoinForm, ReportForm, NewLeagueForm, SettingsForm
 from faceoff.helpers.decorators import authenticated, templated
 from faceoff.models.user import get_active_users, create_user, auth_login, auth_logout
-from faceoff.models.league import find_league, get_active_leagues, create_league
+from faceoff.models.league import find_league, get_active_leagues, create_league, change_league_name
 from faceoff.models.match import create_match, get_match_history, get_league_ranking, get_user_standing
 from faceoff.models.setting import get_setting
 
@@ -165,3 +165,17 @@ def standings():
 @authenticated
 def history():
     return dict(match_history=get_match_history(g.current_league['id']))
+
+@app.route('/<league>/settings/', methods=['GET', 'POST'])
+@templated()
+@authenticated
+def settings():
+    league = g.current_league
+    form = SettingsForm(request.form)
+    if request.method != 'POST':
+        form.name.data = g.current_league['name']
+        return dict(settings_form=form)
+    if form.validate():
+        league = change_league_name(league['id'], form.name.data)
+        return redirect(url_for('dashboard', league=league['slug']))
+    return dict(settings_form=form)

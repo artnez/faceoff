@@ -1,0 +1,7 @@
+{% from 'macros/form.html' import render_field %}
+<form id='settings' action='{{ request.url }}' method='post'>
+    <fieldset>
+        {{ render_field(settings_form.name, errpos='inline') }}
+        <button type='submit' class='btn btn-large'>Save</button>
+    </fieldset>
+</form>
