@@ -216,10 +216,12 @@ class Connection(sqlite3.Connection):
                     param.append(value)
             query += ' WHERE ' + ' AND '.join(fields)
         if sort is not None:
-            sort = self.clean(sort)
+            if not isinstance(sort, Expr):
+                sort ='"%s"' % self.clean(sort)
+            sort = str(sort)
             if order != 'asc': 
                 order = 'desc'
-            query += ' ORDER BY "%s" %s' % (sort, order)
+            query += ' ORDER BY %s %s' % (sort, order)
         if limit is not None:
             query += ' LIMIT %d ' % int(limit)
         c = self.execute(query, param)
