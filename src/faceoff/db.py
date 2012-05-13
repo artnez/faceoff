@@ -235,14 +235,15 @@ class Connection(sqlite3.Connection):
         Creates a record with primary key `pk` in `table` with the given data.
         If no `pk` is specified, it is uniquely generated.
         """
-        fields['id'] = pk or self.generate_pk(table)
+        if pk is not False:
+            fields['id'] = pk or self.generate_pk(table)
         query = 'INSERT INTO "%(table)s" ("%(names)s") VALUES (%(param)s)' % {
             'table': self.clean(table),
             'names': '","'.join(map(self.clean, fields.keys())),
             'param': ','.join(['?'] * len(fields))
             }
         self.execute(query, fields.values())
-        return fields['id']
+        return fields['id'] if fields.has_key('id') else True
 
     def update(self, table, pk, **fields):
         """ 
