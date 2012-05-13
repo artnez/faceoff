@@ -122,10 +122,13 @@ def rebuild_rankings(db, league_id):
 
     # create rankings
     for (i, r) in enumerate(rankings):
-        db.execute(
-            'INSERT INTO ranking (league_id, user_id, rank, wins, losses, win_streak, loss_streak, games) ' \
-            'VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
-            [league_id, r['id'], (i+1), r['win'], r['loss'], r['win_streak'], r['loss_streak'], r['games']])
+        fields = {
+            'league_id': league_id, 'user_id': r['id'], 'rank': (i+1),
+            'mu': r['rating'].mu, 'sigma': r['rating'].sigma, 'wins': r['win'],
+            'losses': r['loss'], 'win_streak': r['win_streak'], 
+            'loss_streak': r['loss_streak'], 'games': r['games']
+            }
+        db.insert('ranking', pk=False, **fields)
 
     if not db.is_building:
         db.commit()
