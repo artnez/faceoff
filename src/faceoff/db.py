@@ -363,3 +363,15 @@ class Cursor(sqlite3.Cursor):
     def _log(self, *args, **kwargs):
         """ Proxy all logs to the connection logger. """
         self.connection._log(*args, **kwargs) # pylint: disable=E1101
+
+class Expr(object):
+    """
+    Represents a raw SQL expression. Useful when trying to differentiate user 
+    input from internally generated SQL code.
+    """
+
+    def __init__(self, sql):
+        self.sql = sql
+
+    def __str__(self):
+        return self.sql
