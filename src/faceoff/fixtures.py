@@ -147,7 +147,9 @@ def rand_users(min_count, max_count):
     count = randint(min_count, max_count)
     names.insert(0, ['a', 'rtnez'])
     for n in range(count):
-        nickname = names[n][0].lower() + names[n][1].lower()
+        fname = names[n][0].lower() if randint(0, 1) else names[n][0]
+        lname = names[n][1].lower() if randint(0, 1) else names[n][1]
+        nickname = fname + lname
         rank = 'admin' if n < 2 else 'member'
         yield {'nickname': nickname, 'password': 'faceoff!', 'rank': rank}
 

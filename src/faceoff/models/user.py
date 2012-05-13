@@ -8,7 +8,7 @@ import string # pylint: disable=W0402
 from random import choice
 from time import time
 from hashlib import sha1
-from faceoff.db import use_db
+from faceoff.db import use_db, Expr
 
 RANK_ADMIN = 'admin'
 RANK_MEMBER = 'member'
@@ -27,7 +27,7 @@ def get_all_users(db):
 
 @use_db
 def get_active_users(db):
-    return search_users(db, sort='nickname', order='asc')
+    return search_users(db, sort=Expr('UPPER(nickname)'), order='asc')
 
 @use_db
 def create_user(db, nickname, password, rank=None):
