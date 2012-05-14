@@ -20,3 +20,7 @@ form .control-group .control-label span.description a {
     font-weight: bold;
     text-decoration: none;
 }
+
+form.form-horizontal .form-buttons {
+    padding-left: 160px;
+}

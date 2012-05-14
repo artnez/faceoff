@@ -39,6 +39,18 @@
         </ul>
     </div>
     {% endif %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div id='flash-messages'>
+            {% for message in messages %}
+            <div class='alert alert-success'>
+                <a class="close" data-dismiss="alert" href="#">×</a>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
     <div id='content'>
         {% if not current_league.active %}
         <div class='alert alert-block'>

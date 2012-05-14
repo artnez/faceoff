@@ -1,0 +1,7 @@
+{% from 'macros/form.html' import render_field, render_radio_field %}
+<form id='rebuild' class='form-horizontal' action='{{ url_for('rebuild') }}' method='post'>
+    <fieldset align='center'>
+        <button type='submit' class='btn btn-large'>Rebuild Standings</button>
+    </fieldset>
+</form>
+

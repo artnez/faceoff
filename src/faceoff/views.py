@@ -20,7 +20,8 @@ from faceoff.models.league import \
     find_league, get_active_leagues, get_inactive_leagues, create_league, \
     update_league
 from faceoff.models.match import \
-    create_match, get_match_history, get_league_ranking, get_user_standing
+    create_match, get_match_history, get_league_ranking, get_user_standing, \
+    rebuild_rankings
 from faceoff.models.setting import get_setting
 
 @app.teardown_request
@@ -212,5 +213,14 @@ def settings():
             name = form.name.data, 
             active = True if form.active.data == '1' else False
             )
+        flash('League settings updated')
         return redirect(url_for('settings', league=league['slug']))
     return dict(settings_form=form)
+
+@app.route('/<league>/rebuild/', methods=('POST',))
+@templated()
+@authenticated
+def rebuild():
+    flash('Standings rebuild complete')
+    rebuild_rankings(g.current_league['id'])
+    return redirect(url_for('settings'))

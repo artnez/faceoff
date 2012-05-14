@@ -1,8 +1,10 @@
 {% from 'macros/form.html' import render_field, render_radio_field %}
-<form id='settings' action='{{ request.url }}' method='post'>
+<form id='settings' class='form-horizontal' action='{{ request.url }}' method='post'>
     <fieldset>
         {{ render_field(settings_form.name, errpos='inline') }}
         {{ render_radio_field(settings_form.active) }}
-        <button type='submit' class='btn btn-large'>Save</button>
+        <div class='form-buttons'>
+            <button type='submit' class='btn'>Save Settings</button>
+        </div>
     </fieldset>
 </form>

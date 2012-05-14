@@ -117,7 +117,7 @@ def rebuild_rankings(db, league_id):
 
     # sort the players based on their ranking
     rankings = [p for p in players.values()]
-    rankings.sort(key=lambda p: p['rating'].mu-3*p['rating'].sigma)
+    rankings.sort(key=lambda p: p['rating'].exposure)
     rankings.reverse()
 
     # create rankings
