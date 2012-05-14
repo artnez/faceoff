@@ -3,17 +3,6 @@
 {% set logo_url = url_for('landing') %}
 {% block content %}
 <div>
-    <form id='new-league' action='{{ url_for('new_league') }}' method='post'>
-        <h1>create a league</h1>
-        <fieldset>
-            <div class='control-group'>
-                <div class='controls'>
-                    <input type='text' name='{{ new_league_form.name.name }}' class='span6' placeholder='league name' value='' />
-                </div>
-            </div>
-            <button type='submit' class='btn btn-large'>Create League</button>
-            <a href='{{ url_for('landing') }}' class='cancel'>cancel</a>
-        </fieldset>
-    </form>
+    {% include 'forms/new_league.html' %}
 </div>
 {% endblock %}

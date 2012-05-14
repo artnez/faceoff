@@ -1,0 +1,16 @@
+{% from 'macros/form.html' import render_field, render_radio_field %}
+<form id='new-league' action='{{ url_for('new_league') }}' method='post'>
+    <h1>create a league</h1>
+    <fieldset>
+        <div class='control-group{{ ' error' if new_league_form.name.errors | length }}'>
+            <div class='controls'>
+                <input type='text' name='{{ new_league_form.name.name }}' class='span6' placeholder='league name' value='' />
+                {%- if new_league_form.name.errors | length -%}
+                <p class='help-inline'>{{ new_league_form.name.errors[0] }}</p>
+                {%- endif %} 
+            </div>
+        </div>
+        <button type='submit' class='btn btn-large'>Create League</button>
+        <a href='{{ url_for('landing') }}' class='cancel'>cancel</a>
+    </fieldset>
+</form>
