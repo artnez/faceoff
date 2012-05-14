@@ -113,6 +113,10 @@ h2 {
     background: none;
 }
 
+#flash-messages {
+    margin: 0 0 25px 0;
+}
+
 #gate h1 {
     display: none;
 }
@@ -175,6 +179,6 @@ h2 {
     margin-left: 10px;
 }
 
-#new-league h1 {
-    margin-bottom: 10px;
+#edit-profile a.cancel {
+    margin-left: 10px;
 }

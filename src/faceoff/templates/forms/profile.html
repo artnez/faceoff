@@ -1,0 +1,9 @@
+{% from 'macros/form.html' import render_field, render_radio_field %}
+<form id='edit-profile' action='{{ request.url }}' method='post'>
+    <fieldset>
+        {{ render_field(profile_form.nickname, errpos='inline', autocomplete='off') }}
+        {{ render_field(profile_form.password, errpos='inline', autocomplete='off') }}
+        <button type='submit' class='btn btn-large'>Save</button>
+        <a href='{{ url_for('landing') }}' class='cancel'>cancel</a>
+    </fieldset>
+</form>

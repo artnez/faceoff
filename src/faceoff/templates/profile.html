@@ -1,0 +1,7 @@
+{% extends 'layouts/simple.html' %}
+{% set head_title = 'Edit Profile' %}
+{% set logo_url = url_for('landing') %}
+{% block content %}
+<h1>Edit Profile</h1>
+{% include 'forms/profile.html' %}
+{% endblock %}

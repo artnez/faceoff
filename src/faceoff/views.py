@@ -8,14 +8,14 @@ import logging
 from datetime import datetime
 from time import localtime, strftime
 from flask import \
-    g, request, session, abort, redirect, url_for, send_from_directory
+    g, request, session, flash, abort, redirect, url_for, send_from_directory
 from faceoff import app
 from faceoff.debug import debug
 from faceoff.forms import \
-    LoginForm, JoinForm, ReportForm, NewLeagueForm, SettingsForm
+    LoginForm, JoinForm, ReportForm, NewLeagueForm, SettingsForm, ProfileForm
 from faceoff.helpers.decorators import authenticated, templated
 from faceoff.models.user import \
-    get_active_users, create_user, auth_login, auth_logout
+    get_active_users, create_user, update_user, auth_login, auth_logout
 from faceoff.models.league import \
     find_league, get_active_leagues, get_inactive_leagues, create_league, \
     update_league
@@ -91,7 +91,7 @@ def gate():
     join_form = JoinForm(access_code=get_setting('access_code'))
     return dict(login_form=LoginForm(), join_form=join_form)
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=('GET', 'POST'))
 @templated()
 def login():
     form = LoginForm(request.form)
@@ -107,7 +107,7 @@ def logout():
     auth_logout(session)
     return redirect(url_for('gate'))
 
-@app.route('/join', methods=['GET', 'POST'])
+@app.route('/join', methods=('GET', 'POST'))
 @templated()
 def join():
     form = JoinForm(request.form, access_code=get_setting('access_code'))
@@ -123,13 +123,29 @@ def join():
 def landing():
     return dict(active_leagues=get_active_leagues())
 
+@app.route('/profile', methods=('GET', 'POST'))
+@templated()
+@authenticated
+def profile():
+    form = ProfileForm(request.form)
+    if request.method == 'POST' and form.validate():
+        update_user(
+            g.current_user['id'],
+            nickname = form.nickname.data,
+            password = form.password.data
+            )
+        flash('Profile updated successfully!')
+        return redirect(url_for('landing'))
+    form.nickname.data = g.current_user['nickname']
+    return dict(profile_form=form)
+
 @app.route('/inactive')
 @templated()
 @authenticated
 def inactive():
     return dict(inactive_leagues=get_inactive_leagues())
 
-@app.route('/new', methods=['GET', 'POST'])
+@app.route('/new', methods=('GET', 'POST'))
 @templated()
 @authenticated
 def new_league():
@@ -180,7 +196,7 @@ def standings():
 def history():
     return dict(match_history=get_match_history(g.current_league['id']))
 
-@app.route('/<league>/settings/', methods=['GET', 'POST'])
+@app.route('/<league>/settings/', methods=('GET', 'POST'))
 @templated()
 @authenticated
 def settings():

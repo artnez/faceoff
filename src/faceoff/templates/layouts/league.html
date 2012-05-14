@@ -33,6 +33,7 @@
         <h3>Other Stuff</h3>
         <ul class='menu'>
             <li><span>{{ current_user.nickname }}</span></li>
+            <li><a href='{{ url_for('profile') }}'>edit profile</a></li>
             <li><a href='{{ url_for('landing') }}'>other leagues</a></li>
             <li><a href='{{ url_for('logout') }}' data-confirm='Are you sure you want to logout?'>logout</a></li>
         </ul>

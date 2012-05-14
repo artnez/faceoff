@@ -45,6 +45,19 @@ def create_user(db, nickname, password, rank=None):
         rank = rank,
         date_created = int(time())
         )
+@use_db
+def update_user(db, user_id, nickname=None, password=None):
+    user = find_user(db, id=user_id)
+    if user is None:
+        return False
+    fields = {}
+    if nickname is not None and nickname != user['nickname']:
+        fields['nickname'] = nickname
+    if password is not None and password != '':
+        fields['salt'] = generate_salt()
+        fields['password'] = sha1(password + fields['salt']).hexdigest()
+    db.update('user', user_id, **fields)
+    return find_user(db, id=user_id)
 
 @use_db
 def auth_login(db, session, nickname, password):

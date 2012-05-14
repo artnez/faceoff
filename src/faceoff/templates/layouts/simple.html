@@ -13,10 +13,23 @@
     <div id='extra-nav'>
         <ul class='menu'>
             <li><span>{{ current_user.nickname }}</span></li>
+            <li><a href='{{ url_for('profile') }}'>edit profile</a></li>
             <li><a href='{{ url_for('logout') }}' data-confirm='Are you sure you want to logout?'>logout</a></li>
         </ul>
     </div>
     {% endif %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div id='flash-messages'>
+            {% for message in messages %}
+            <div class='alert alert-success'>
+                <a class="close" data-dismiss="alert" href="#">×</a>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
     <div id='content'>
         {%- block content %}{% endblock %}
     </div>

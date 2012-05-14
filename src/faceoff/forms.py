@@ -6,7 +6,8 @@ License: MIT, see LICENSE for details
 import re
 from wtforms import Form, TextField, SelectField, RadioField
 from wtforms.widgets import PasswordInput
-from wtforms.validators import Required, Length, Regexp, EqualTo, AnyOf, NoneOf
+from wtforms.validators import \
+    Optional, Required, Length, Regexp, EqualTo, AnyOf, NoneOf
 from faceoff.helpers.validators import UniqueNickname
 from faceoff.db import get_connection
 
@@ -83,3 +84,16 @@ class SettingsForm(Form):
         )
     active = RadioField(label='Active?', choices=[('1', 'Yes'), ('0', 'No')])
 
+class ProfileForm(Form):
+    nickname = TextField(
+        label='Nickname',
+        validators=[
+            Required(), 
+            Length(2, 20), 
+            Regexp(r'^[a-zA-Z0-9_]+$'),
+            ]
+        )
+    password = PasswordField(
+        label='New Password', 
+        validators=[Optional(), Length(4)]
+        )
