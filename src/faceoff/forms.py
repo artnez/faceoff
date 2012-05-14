@@ -73,20 +73,13 @@ class NewLeagueForm(Form):
     name = TextField(
         label='League Name', 
         id='name',
-        validators=[
-            Required(), 
-            Length(2), 
-            NoneOf(['new'], values_formatter=lambda v: map(str.lower, v))
-            ]
+        validators=[Required(), Length(2)]
         )
 
 class SettingsForm(Form):
     name = TextField(
         label='League Name', 
-        validators=[
-            Required(), 
-            Length(2), 
-            NoneOf(['new'], values_formatter=lambda v: map(str.lower, v))
-            ]
+        validators=[Required(), Length(2)]
         )
     active = RadioField(label='Active?', choices=[('1', 'Yes'), ('0', 'No')])
+
