@@ -117,11 +117,11 @@ h2 {
     display: none;
 }
 
-#landing h1 {
+.league-list h1 {
     margin: 0 0 10px 0;
 }
 
-#landing ul.leagues {
+.league-list ul.leagues {
     width: 100%;
     overflow: hidden;
     list-style: none;
@@ -129,7 +129,7 @@ h2 {
     margin: 0 0 20px 0;
 }
 
-#landing ul.leagues li {
+.league-list ul.leagues li {
     position: relative;
     float: left;
     width: 173px;
@@ -139,11 +139,11 @@ h2 {
     background: #333;
 }
 
-#landing ul.leagues li:nth-child(3n) {
+.league-list ul.leagues li:nth-child(3n) {
     margin-right: 0;
 }
 
-#landing ul.leagues li a {
+.league-list ul.leagues li a {
     display: block;
     font-size: 18px;
     height: 100%;
@@ -153,12 +153,12 @@ h2 {
     text-align: center;
 }
 
-#landing ul.leagues li a:hover {
+.league-list ul.leagues li a:hover {
     text-decoration: none;
     background: #005580;
 }
 
-#landing ul.leagues li.create a {
+.league-list ul.leagues li.create a {
     color: #999;
     background: #ddd;
     line-height: 72px;
@@ -166,7 +166,7 @@ h2 {
     text-transform: lowercase;
 }
 
-#landing ul.leagues li .name {
+.league-list ul.leagues li .name {
     display: block;
     padding: 20px 8px 2px 8px;
 }

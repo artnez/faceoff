@@ -17,7 +17,8 @@ from faceoff.helpers.decorators import authenticated, templated
 from faceoff.models.user import \
     get_active_users, create_user, auth_login, auth_logout
 from faceoff.models.league import \
-    find_league, get_active_leagues, create_league, update_league
+    find_league, get_active_leagues, get_inactive_leagues, create_league, \
+    update_league
 from faceoff.models.match import \
     create_match, get_match_history, get_league_ranking, get_user_standing
 from faceoff.models.setting import get_setting
@@ -121,6 +122,12 @@ def join():
 @authenticated
 def landing():
     return dict(active_leagues=get_active_leagues())
+
+@app.route('/inactive')
+@templated()
+@authenticated
+def inactive():
+    return dict(inactive_leagues=get_inactive_leagues())
 
 @app.route('/new', methods=['GET', 'POST'])
 @templated()

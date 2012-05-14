@@ -24,6 +24,10 @@ def get_active_leagues(db):
     return search_leagues(db, active=1)
 
 @use_db
+def get_inactive_leagues(db):
+    return search_leagues(db, active=0)
+
+@use_db
 def create_league(db, name, description=None, active=True):
     name = name.strip()
     return db.insert(

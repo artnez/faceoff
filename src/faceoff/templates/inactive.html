@@ -1,0 +1,20 @@
+{% extends 'layouts/simple.html' %}
+{% set head_title = 'Inactive Leagues' %}
+{% set logo_url = url_for('landing') %}
+{% block content %}
+<h1>Inactive Leagues</h1>
+{% if inactive_leagues | length %}
+<div class='league-list'>
+    <ul class='leagues'>
+        {% for league in inactive_leagues %}
+        <li>
+            <a href='{{ url_for('dashboard', league=league.slug) }}'>{{ league.name }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p><em>There are no inactive leagues in the system.</em></p>
+    {% endif %}
+    <p><a href='{{ url_for('landing') }}'>&laquo; back to league selection</a></p>
+</div>
+{% endblock %}
