@@ -11,7 +11,7 @@ CREATE TABLE setting (
     value TEXT DEFAULT NULL
     );
 CREATE UNIQUE INDEX idx_setting_unique ON setting (name);
-INSERT INTO setting (name, value) VALUES ('schema_version', '0.1.0');
+INSERT INTO setting (name, value) VALUES ('schema_version', '1.0');
 
 CREATE TABLE user (
     id CHAR(32) PRIMARY KEY,
