@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.3.1
+-----
+
+  * Fixed unecessary viewport scaling on mobile devices.
+
 0.3.0
 -----
 
