@@ -1,7 +1,9 @@
 {% extends 'layouts/league.html' %}
 {% set head_title = 'Dashboard' %}
 {% block content %}
-{% include 'forms/report.html' %}
+{% if current_league.active %}
+    {% include 'forms/report.html' %}
+{% endif %}
 <div id='profile'>
     <p class='rank'>
         <span class='player'>

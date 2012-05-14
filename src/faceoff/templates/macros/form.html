@@ -17,3 +17,23 @@
     </div>
 </div>
 {%- endmacro %}
+
+{% macro render_radio_field(field) %}
+<div class='control-group{{ ' error' if field.errors | length }}'>
+    <label class='control-label'>
+        {{ field.label.text }}
+        {%- if field.description -%}
+        <span class='description'>(<a href='#' class='tip' title='{{ field.description }}'>?</a>)</span>
+        {%- endif -%}
+    </label>
+    <div class='controls'>
+        {%- for subfield in field %}
+        <label class='radio'>
+            <input type='radio' id='{{ subfield.id }}' name='{{ subfield.name }}' value='{{ subfield.data }}' {% if subfield.data == field.data %}checked="checked"{% endif %} />
+            {{ subfield.label.text }}
+        </label>
+        {%- endfor %}
+        <p class='help-block'>{{ field.errors[0] }}</p>
+    </div>
+</div>
+{%- endmacro %}

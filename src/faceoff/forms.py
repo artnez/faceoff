@@ -21,7 +21,12 @@ class JoinForm(Form):
     nickname = TextField(
         label='Nickname', 
         id='join_nickname', 
-        validators=[Required(), Length(2, 20), Regexp(r'^[a-zA-Z0-9_]+$'), UniqueNickname()]
+        validators=[
+            Required(), 
+            Length(2, 20), 
+            Regexp(r'^[a-zA-Z0-9_]+$'), 
+            UniqueNickname()
+            ]
         )
     password = PasswordField(
         label='Password', 
@@ -68,12 +73,20 @@ class NewLeagueForm(Form):
     name = TextField(
         label='League Name', 
         id='name',
-        validators=[Required(), Length(2), NoneOf(['new'], values_formatter=lambda v: map(str.lower, v))]
+        validators=[
+            Required(), 
+            Length(2), 
+            NoneOf(['new'], values_formatter=lambda v: map(str.lower, v))
+            ]
         )
 
 class SettingsForm(Form):
     name = TextField(
         label='League Name', 
-        id='name',
-        validators=[Required(), Length(2), NoneOf(['new'], values_formatter=lambda v: map(str.lower, v))]
+        validators=[
+            Required(), 
+            Length(2), 
+            NoneOf(['new'], values_formatter=lambda v: map(str.lower, v))
+            ]
         )
+    active = RadioField(label='Active?', choices=[('1', 'Yes'), ('0', 'No')])

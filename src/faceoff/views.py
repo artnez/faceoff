@@ -7,14 +7,19 @@ import os
 import logging
 from datetime import datetime
 from time import localtime, strftime
-from flask import g, request, session, abort, redirect, url_for, send_from_directory
+from flask import \
+    g, request, session, abort, redirect, url_for, send_from_directory
 from faceoff import app
 from faceoff.debug import debug
-from faceoff.forms import LoginForm, JoinForm, ReportForm, NewLeagueForm, SettingsForm
+from faceoff.forms import \
+    LoginForm, JoinForm, ReportForm, NewLeagueForm, SettingsForm
 from faceoff.helpers.decorators import authenticated, templated
-from faceoff.models.user import get_active_users, create_user, auth_login, auth_logout
-from faceoff.models.league import find_league, get_active_leagues, create_league, change_league_name
-from faceoff.models.match import create_match, get_match_history, get_league_ranking, get_user_standing
+from faceoff.models.user import \
+    get_active_users, create_user, auth_login, auth_logout
+from faceoff.models.league import \
+    find_league, get_active_leagues, create_league, update_league
+from faceoff.models.match import \
+    create_match, get_match_history, get_league_ranking, get_user_standing
 from faceoff.models.setting import get_setting
 
 @app.teardown_request
@@ -27,7 +32,7 @@ def get_league_from_url(endpoint, view_args):
     if not view_args or 'league' not in view_args:
         return
     league = find_league(slug=view_args.pop('league'))
-    if league is None or league['active'] != 1:
+    if league is None:
         abort(404)
     g.current_league = league
 
@@ -144,6 +149,8 @@ def dashboard():
 @templated()
 @authenticated
 def report():
+    if not g.current_league['active']:
+        abort(403)
     form = ReportForm(get_active_users(), request.form)
     if not form.validate():
         return dict(form=form)
@@ -174,8 +181,13 @@ def settings():
     form = SettingsForm(request.form)
     if request.method != 'POST':
         form.name.data = g.current_league['name']
+        form.active.data = '1' if g.current_league['active'] else '0'
         return dict(settings_form=form)
     if form.validate():
-        league = change_league_name(league['id'], form.name.data)
-        return redirect(url_for('dashboard', league=league['slug']))
+        league = update_league(
+            league['id'], 
+            name = form.name.data, 
+            active = True if form.active.data == '1' else False
+            )
+        return redirect(url_for('settings', league=league['slug']))
     return dict(settings_form=form)

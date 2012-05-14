@@ -36,21 +36,24 @@ def create_league(db, name, description=None, active=True):
         )
 
 @use_db
-def change_league_name(db, league_id, name, slug=None):
+def update_league(db, league_id, name=None, active=None):
     league = find_league(db, id=league_id)
-    name = name.strip()
-    if league is None or league['name'] == name:
-        return league
-    db.update(
-        'league', 
-        league_id, 
-        name = name, 
-        slug = generate_league_slug(db, name)
-        )
+    if league is None:
+        return False
+    fields = {}
+    if name is not None:
+        name = name.strip()
+        slug = league['slug'] if name == league['name'] else \
+            generate_league_slug(db, name)
+        fields['name'] = name
+        fields['slug'] = slug
+    if active is not None:
+        fields['active'] = '1' if active else '0'
+    db.update('league', league_id, **fields)
     return find_league(db, id=league_id)
 
 @use_db
-def generate_league_slug(db, name, omit=None):
+def generate_league_slug(db, name):
     short = re.sub(r'[^0-9a-zA-Z]+', '-', name.lower()).strip('-')
     count = 0
     while True:

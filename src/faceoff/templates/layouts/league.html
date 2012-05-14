@@ -39,6 +39,13 @@
     </div>
     {% endif %}
     <div id='content'>
+        {% if not current_league.active %}
+        <div class='alert alert-block'>
+            <h4 class='alert-heading'>Inactive League</h4>
+            <p>This league has been set to an inactive state. You will not be able to record new matches or 
+            change existing ones.</p>
+        </div>
+        {% endif %}
         <h1>{{ page_title or head_title }}</h1>
         {% block content %}{% endblock %}
     </div>
