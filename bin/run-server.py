@@ -16,6 +16,8 @@ sys.path.insert(1, os.path.join(project_dir, 'lib'))
 
 from argparse import ArgumentParser
 parser = ArgumentParser(usage='%(prog)s [options]', argument_default='')
+parser.add_argument('--host', metavar='<string>', dest='FACEOFF_HOST', default='faceoff.dev')
+parser.add_argument('--port', metavar='<string>', dest='FACEOFF_PORT', default='5000')
 parser.add_argument('--config', metavar='<string>', dest='FACEOFF_CONFIG')
 parser.add_argument('--debug', action='store_const', const='1', dest='FACEOFF_DEBUG')
 parser.add_argument('--db-path', metavar='<string>', dest='FACEOFF_DB_PATH')
@@ -28,4 +30,4 @@ args = parser.parse_args()
 os.environ.update(vars(args))
 
 from faceoff import app
-app.run(threaded=True)
+app.run(args.FACEOFF_HOST, int(args.FACEOFF_PORT), threaded=True)

@@ -10,7 +10,7 @@ import os
 # flask
 LOGGER_NAME = 'faceoff'
 DEBUG = os.getenv('FACEOFF_DEBUG') == '1' 
-SERVER_NAME = 'faceoff.dev:5000'
+SERVER_NAME = os.getenv('FACEOFF_HOST') + ':' + os.getenv('FACEOFF_PORT')
 SECRET_KEY = '89a1100b5a62059021260a75738e6e61' if DEBUG else os.urandom(24)
 PERMANENT_SESSION_LIFETIME = 60*60*24*365
 
