@@ -174,11 +174,3 @@ h2 {
     display: block;
     padding: 20px 8px 2px 8px;
 }
-
-#new-league a.cancel {
-    margin-left: 10px;
-}
-
-#edit-profile a.cancel {
-    margin-left: 10px;
-}
