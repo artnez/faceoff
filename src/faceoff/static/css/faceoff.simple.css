@@ -89,7 +89,8 @@ h2 {
 #extra-nav {
     position: absolute;
     top: -22px;
-    right: 0;
+    left: 0;
+    width: 100%;
 }
 
 #extra-nav h3 {
@@ -97,6 +98,7 @@ h2 {
 }
 
 #extra-nav ul {
+    float: right;
     list-style: none;
     padding: 0;
     margin: 0;
@@ -111,6 +113,21 @@ h2 {
 
 #extra-nav ul li:first-child {
     background: none;
+}
+
+#extra-nav ul.left {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#extra-nav ul.left li {
+    margin: 0;
+    padding: 0;
+}
+
+#extra-nav ul.left li a:before {
+    content: "« ";
 }
 
 #flash-messages {
