@@ -97,3 +97,10 @@ class ProfileForm(Form):
         label='New Password', 
         validators=[Optional(), Length(4)]
         )
+
+class ConfigForm(Form):
+    access_code = TextField(
+        label='Access Code', 
+        id='access_code',
+        description='This code is used to create a new Faceoff account.'
+        )

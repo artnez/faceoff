@@ -1,0 +1,8 @@
+{% extends 'layouts/simple.html' %}
+{% set head_title='League Configuration' %}
+{% set logo_url = url_for('landing') %}
+{% block content %}
+<div>
+    {% include 'forms/config.html' %}
+</div>
+{% endblock %}

@@ -12,7 +12,8 @@ from flask import \
 from faceoff import app
 from faceoff.debug import debug
 from faceoff.forms import \
-    LoginForm, JoinForm, ReportForm, NewLeagueForm, SettingsForm, ProfileForm
+    LoginForm, JoinForm, ReportForm, NewLeagueForm, SettingsForm, ProfileForm, \
+    ConfigForm
 from faceoff.helpers.decorators import authenticated, templated
 from faceoff.models.user import \
     get_active_users, create_user, update_user, auth_login, auth_logout
@@ -22,7 +23,7 @@ from faceoff.models.league import \
 from faceoff.models.match import \
     create_match, get_match_history, get_league_ranking, get_user_standing, \
     rebuild_rankings
-from faceoff.models.setting import get_setting
+from faceoff.models.setting import get_setting, del_setting, set_setting
 
 @app.teardown_request
 def db_close(exception): # pylint:disable=W0613
@@ -155,6 +156,23 @@ def new_league():
         return dict(new_league_form=form)
     create_league(form.name.data) 
     return redirect(url_for('landing'))
+
+@app.route('/config', methods=('GET', 'POST'))
+@templated()
+@authenticated
+def config():
+    form = ConfigForm(request.form)
+    if request.method != 'POST' or not form.validate():
+        form.access_code.data = get_setting('access_code')
+        return dict(config_form=form)
+    access_code = form.access_code.data.strip()
+    if access_code == '':
+        del_setting('access_code')
+        flash('Access code removed')
+    else:
+        set_setting('access_code', access_code)
+        flash('Access changed')
+    return redirect(url_for('config'))
 
 @app.route('/<league>/')
 @templated()
