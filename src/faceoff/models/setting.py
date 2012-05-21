@@ -16,7 +16,11 @@ def get_setting(db, name, default=None):
 def set_setting(db, name, value=None):
     setting = db.find('setting', name=name)
     if setting is None:
-        query = 'INSERT INTO setting (name, value) VALUES (?, ?)'
+        query = 'INSERT INTO setting (value, name) VALUES (?, ?)'
     else:
         query = 'UPDATE setting SET value=? WHERE name=?'
-    db.execute(query, (name, value))
+    db.execute(query, (value, name))
+
+@use_db
+def del_setting(db, name):
+    db.execute('DELETE FROM setting WHERE name=?', (name,))
