@@ -19,4 +19,10 @@ jQuery(function($) {
     setTimeout(function() {
         $('#report button[type=submit]').attr('disabled', false);
     }, 2000);
+
+    // back buttons
+    $('a.go-back').click(function() {
+        history && history.go(-1);
+        return false;
+    });
 });
