@@ -13,25 +13,6 @@ p.search-empty {
     font-style: italic;
 }
 
-#content .section {
-    margin: 0 0 40px 0;
-}
-
-#content .section h2.center {
-    color: #333;
-    text-align: center;
-    font-family: Georgia;
-    font-weight: normal;
-    font-style: italic;
-    background: url('../img/heading-bg-line.png') no-repeat 0 50%;
-    margin: 0 0 20px 0;
-}
-
-#content .section h2.center span {
-    background: #fff;
-    padding: 0 12px;
-}
-
 #report {
     background: #eee;
     padding: 14px 20px;

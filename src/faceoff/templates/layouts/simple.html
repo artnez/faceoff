@@ -14,7 +14,7 @@
         <ul class='menu'>
             <li><span>{{ current_user.nickname }}</span></li>
             <li><a href='{{ url_for('profile') }}'>edit profile</a></li>
-            <li><a href='{{ url_for('config') }}'>configuration</a></li>
+            <li><a href='{{ url_for('admin') }}'>admin</a></li>
             <li><a href='{{ url_for('logout') }}' data-confirm='Are you sure you want to logout?'>logout</a></li>
         </ul>
     </div>

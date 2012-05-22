@@ -138,6 +138,25 @@ h2 {
     display: none;
 }
 
+.section {
+    margin: 0 0 40px 0;
+}
+
+.section h2.center {
+    color: #333;
+    text-align: center;
+    font-family: Georgia;
+    font-weight: normal;
+    font-style: italic;
+    background: url('../img/heading-bg-line.png') no-repeat 0 50%;
+    margin: 0 0 20px 0;
+}
+
+#content .section h2.center span {
+    background: #fff;
+    padding: 0 12px;
+}
+
 .league-list h1 {
     margin: 0 0 10px 0;
 }

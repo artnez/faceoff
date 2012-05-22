@@ -1,0 +1,8 @@
+{% from 'macros/form.html' import render_field %}
+<form id='admin' action='{{ request.url }}' method='post'>
+    <fieldset>
+        {{ render_field(admin_form.access_code, errpos='inline') }}
+        <button type='submit' class='btn btn-large'>Save</button>
+        <a href='#' class='cancel go-back'>cancel</a>
+    </fieldset>
+</form>

@@ -24,3 +24,10 @@ def set_setting(db, name, value=None):
 @use_db
 def del_setting(db, name):
     db.execute('DELETE FROM setting WHERE name=?', (name,))
+
+@use_db
+def set_access_code(db, code):
+    if code == '':
+        del_setting(db, 'access_code')
+    else:
+        set_setting(db, 'access_code', code)

@@ -13,7 +13,7 @@ from faceoff import app
 from faceoff.debug import debug
 from faceoff.forms import \
     LoginForm, JoinForm, ReportForm, NewLeagueForm, SettingsForm, ProfileForm, \
-    ConfigForm
+    AdminForm
 from faceoff.helpers.decorators import authenticated, templated
 from faceoff.models.user import \
     get_active_users, create_user, update_user, auth_login, auth_logout
@@ -23,7 +23,7 @@ from faceoff.models.league import \
 from faceoff.models.match import \
     create_match, get_match_history, get_league_ranking, get_user_standing, \
     rebuild_rankings
-from faceoff.models.setting import get_setting, del_setting, set_setting
+from faceoff.models.setting import get_setting, set_access_code
 
 @app.teardown_request
 def db_close(exception): # pylint:disable=W0613
@@ -157,22 +157,17 @@ def new_league():
     create_league(form.name.data) 
     return redirect(url_for('landing'))
 
-@app.route('/config', methods=('GET', 'POST'))
+@app.route('/admin', methods=('GET', 'POST'))
 @templated()
 @authenticated
-def config():
-    form = ConfigForm(request.form)
+def admin():
+    form = AdminForm(request.form)
     if request.method != 'POST' or not form.validate():
         form.access_code.data = get_setting('access_code')
-        return dict(config_form=form)
-    access_code = form.access_code.data.strip()
-    if access_code == '':
-        del_setting('access_code')
-        flash('Access code removed')
-    else:
-        set_setting('access_code', access_code)
-        flash('Access changed')
-    return redirect(url_for('config'))
+        return dict(admin_form=form)
+    set_access_code(form.access_code.data.strip())
+    flash('Settings saved')
+    return redirect(url_for('admin'))
 
 @app.route('/<league>/')
 @templated()

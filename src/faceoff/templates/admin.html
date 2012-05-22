@@ -1,8 +1,9 @@
 {% extends 'layouts/simple.html' %}
-{% set head_title='League Configuration' %}
+{% set head_title='Administration' %}
 {% set logo_url = url_for('landing') %}
 {% block content %}
-<div>
-    {% include 'forms/config.html' %}
+<div class='section'>
+    <h1>Admin</h1>
+    {% include 'forms/admin.html' %}
 </div>
 {% endblock %}

@@ -98,7 +98,7 @@ class ProfileForm(Form):
         validators=[Optional(), Length(4)]
         )
 
-class ConfigForm(Form):
+class AdminForm(Form):
     access_code = TextField(
         label='Access Code', 
         id='access_code',
