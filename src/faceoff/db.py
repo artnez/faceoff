@@ -32,10 +32,12 @@ def init_app(app):
     for the application's threads and subprocesses to use.
     """
     db_path = app.config['DB_PATH'] 
-    if not db_path:
+    if db_path:
+        db_path = os.path.expanduser(db_path)
+        if not os.path.exists(db_path):
+            db_path = make_new_db(db_path)
+    else:
         db_path = make_temp_db()
-    elif not os.path.exists(db_path):
-        db_path = make_new_db(db_path)
     app.db = Factory(db_path)
     set_global_factory(app.db)
 
