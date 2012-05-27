@@ -55,33 +55,6 @@ def inject_template_data():
         d['current_league'] = g.current_league
     return d
 
-@app.template_filter('date_format')
-def date_format(s, f):
-    return strftime(f, localtime(int(s)))
-
-@app.template_filter('player_rank')
-def player_rank(r):
-    return '---' if r is None else '%03d' % int(r)
-
-@app.template_filter('human_date')
-def human_date(s):
-    d = datetime.fromtimestamp(s)
-    n = datetime.today()
-    if d.date() == n.date():
-        return 'today @ %s' % d.strftime('%-I:%M %p').lower()
-    x = n - d
-    if x.days == 1:
-        return 'yesterday @ %s' % d.strftime('%-I:%M %p').lower()
-    if d.year == n.year:
-        return d.strftime('%a, %b %-d'+num_suffix(d.day)) + \
-               d.strftime(' @ %-I%p').lower()
-    return d.strftime('%b %-d'+num_suffix(d.day)+', %Y')+ \
-           d.strftime(' @ %-I%p').lower()
-
-@app.template_filter('num_suffix')
-def num_suffix(d):
-    return 'th' if 11 <= d <= 13 else {1:'st', 2:'nd', 3:'rd'}.get(d % 10, 'th')
-
 @app.route('/favicon.ico')
 def favicon():
     path = os.path.join(app.root_path, 'static')
