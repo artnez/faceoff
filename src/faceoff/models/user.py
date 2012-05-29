@@ -18,6 +18,11 @@ def find_user(db, **kwargs):
     return db.find('user', **kwargs)
 
 @use_db
+def find_user_id(db, nickname):
+    user = db.find('user', nickname=nickname)
+    return None if user is None else user['id']
+
+@use_db
 def search_users(db, **kwargs):
     return db.search('user', **kwargs)
 

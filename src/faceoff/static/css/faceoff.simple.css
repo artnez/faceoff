@@ -139,6 +139,7 @@ h2 {
 }
 
 .section {
+    position: relative;
     margin: 0 0 40px 0;
 }
 
@@ -155,6 +156,33 @@ h2 {
 #content .section h2.center span {
     background: #fff;
     padding: 0 12px;
+}
+
+#content .section h2.center a.prev-button,
+#content .section h2.center a.next-button {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: url('../img/heading-buttons.png') no-repeat 0 0;
+    text-indent: -1000px;
+    overflow: hidden;
+    margin: 0 0 2px 0;
+    padding: 0;
+    vertical-align: middle;
+}
+
+#content .section h2.center a.prev-button.hidden,
+#content .section h2.center a.next-button.hidden {
+    visibility: hidden;
+}
+
+#content .section h2.center a.prev-button {
+    margin-right: -5px;
+    background-position: 0 -20px;
+}
+
+#content .section h2.center a.next-button {
+    margin-left: -5px;
 }
 
 .league-list h1 {

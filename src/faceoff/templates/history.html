@@ -2,29 +2,43 @@
 {% set head_title = 'History' %}
 {% block content %}
 <div class='section'>
-    <h2 class='center'><span>Recent Matches</span></h2>
-    {% if match_history | length %}
+    <h2 class='center'>
+        {% if newer_match %}
+        <a class='prev-button' href='{{ url_for('history', nickname=nickname, **newer_match['dateargs']) }}'>Newer</a>
+        {% else %}
+        <a class='prev-button hidden' href='#'>--</a>
+        {% endif %}
+        <span>{{ time_start | full_date }}</span>
+        {% if older_match %}
+        <a class='next-button' href='{{ url_for('history', nickname=nickname, **older_match['dateargs']) }}'>Older</a>
+        {% else %}
+        <a class='next-button hidden' href='#'>--</a>
+        {% endif %}
+    </h2>
+    {% if matches | length %}
     <table class='table table-bordered table-striped match-history'>
         <thead>
             <tr>
                 <th class='winner'>Won</th>
                 <th class='versus'>vs.</th>
                 <th class='loser'>Lost</th>
-                <th class='date'>Date Played</th>
+                <th class='time'>Time</th>
+                <th class='draw'>P(draw)</th>
             </tr>
         </thead>
         <tbody>
-        {% for match in match_history %}
+        {% for match in matches %}
             <tr>
                 <td class='winner'>{{ match['winner_nickname'] }} <span class='rank'>{{ match['winner_rank']|player_rank }}</span></td><td class='versus'>vs.</td>
                 <td class='loser'><span class='rank'>{{ match['loser_rank']|player_rank }}</span> {{ match['loser_nickname'] }}</td>
-                <td class='date'>{{ match['date_created']|human_date() }}</td>
+                <td class='time'>{{ match['date_created']|date_format('%-I:%M%p') | lower }}</td>
+                <td class='draw'>{{ match['draw_prob'] | default('0') | float | round(1) }}%</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
     {% else %}
-    <p class='search-empty'>No matches have been played.</p>
+    <p class='search-empty'>No matches played.</p>
     {% endif %}
 </div>
 {% endblock %}

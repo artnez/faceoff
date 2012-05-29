@@ -5,10 +5,11 @@ License: MIT, see LICENSE for details
 
 import os
 import logging
-from datetime import datetime
-from time import localtime, strftime
+from datetime import datetime, date
+from time import mktime
 from flask import \
-    g, request, session, flash, abort, redirect, url_for, send_from_directory
+    g, request, session, flash, abort, redirect, url_for, send_from_directory, \
+    jsonify
 from faceoff import app
 from faceoff.debug import debug
 from faceoff.forms import \
@@ -16,13 +17,14 @@ from faceoff.forms import \
     AdminForm
 from faceoff.helpers.decorators import authenticated, templated
 from faceoff.models.user import \
-    get_active_users, create_user, update_user, auth_login, auth_logout
+    find_user, get_active_users, create_user, update_user, auth_login, \
+    auth_logout, find_user_id
 from faceoff.models.league import \
     find_league, get_active_leagues, get_inactive_leagues, create_league, \
     update_league
 from faceoff.models.match import \
-    create_match, get_match_history, get_league_ranking, get_user_standing, \
-    rebuild_rankings
+    create_match, search_matches, get_league_ranking, get_user_standing, \
+    rebuild_rankings, find_older_match, find_newer_match
 from faceoff.models.setting import get_setting, set_access_code
 
 @app.teardown_request
@@ -152,7 +154,7 @@ def dashboard():
         report_form = ReportForm(get_active_users()),
         current_ranking = get_user_standing(league['id'], user['id']),
         ranking=get_league_ranking(league['id']),
-        history=get_match_history(league['id'], user_id=user['id'])
+        history=search_matches(league['id'], user_id=user['id'])
         )
 
 @app.route('/<league>/report', methods=('POST',))
@@ -177,11 +179,45 @@ def report():
 def standings():
     return dict(ranking=get_league_ranking(g.current_league['id']))
 
-@app.route('/<league>/history/')
+@app.route('/<league>/history/', defaults={'nickname': None, 'year': None, 'month': None, 'day': None})
+@app.route('/<league>/history/<int:year>/', defaults={'nickname': None, 'month': None, 'day': None})
+@app.route('/<league>/history/<int:year>/<month>/', defaults={'nickname': None, 'day': None})
+@app.route('/<league>/history/<int:year>/<month>/<int:day>', defaults={'nickname': None})
+@app.route('/<league>/history/<nickname>/', defaults={'year': None, 'month': None, 'day': None})
+@app.route('/<league>/history/<nickname>/<int:year>/', defaults={'month': None, 'day': None})
+@app.route('/<league>/history/<nickname>/<int:year>/<month>/', defaults={'day': None})
+@app.route('/<league>/history/<nickname>/<int:year>/<month>/<int:day>')
 @templated()
 @authenticated
-def history():
-    return dict(match_history=get_match_history(g.current_league['id']))
+def history(nickname, year, month, day):
+    league_id = g.current_league['id']
+    user_id = find_user_id(nickname) if nickname is not None else None
+    today = date.today()
+    refresh = False
+    if year is None:
+        year = today.year
+        refresh = True
+    if month is None:
+        month = today.strftime('%b').lower()
+        refresh = True
+    if day is None:
+        day = today.day if month == today.strftime('%b').lower() else 1
+        refresh = True
+    if refresh:
+        kwargs = {'nickname': nickname, 'year': year, 'month': month, 'day': day}
+        return redirect(url_for('history', **kwargs))
+    try:
+        date_start = datetime.strptime('%s-%s-%s' % (year, month, day), '%Y-%b-%d')
+        date_end = date_start.replace(hour=23, minute=59, second=59)
+        time_start = mktime(date_start.timetuple())
+        time_end = mktime(date_end.timetuple())
+    except ValueError:
+        abort(404)
+    matches = search_matches(league_id, user_id, time_start, time_end)
+    newer = find_newer_match(league_id, user_id, time_end)
+    older = find_older_match(league_id, user_id, time_start)
+    return dict(matches=matches, time_start=time_start, time_end=time_end,
+                newer_match=newer, older_match=older, nickname=nickname)
 
 @app.route('/<league>/settings/', methods=('GET', 'POST'))
 @templated()

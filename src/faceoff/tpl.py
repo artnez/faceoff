@@ -3,8 +3,9 @@ Copyright: (c) 2012 Artem Nezvigin <artem@artnez.com>
 License: MIT, see LICENSE for details
 """
 
+from faceoff.debug import debug
 from datetime import datetime
-from time import localtime, strftime
+from time import localtime, strftime, mktime
 
 _filters = {}
 
@@ -16,9 +17,12 @@ def template_filter(f):
     Marks the decorated function as a template filter.
     """
     _filters[f.__name__] = f
+    return f
 
 @template_filter
 def date_format(s, f):
+    if isinstance(s, datetime):
+        s = mktime(s.timetuple())
     return strftime(f, localtime(int(s)))
 
 @template_filter
@@ -26,7 +30,25 @@ def player_rank(r):
     return '---' if r is None else '%03d' % int(r)
 
 @template_filter
+def full_date(s, with_month=True, with_date=True, with_year=True):
+    if isinstance(s, datetime):
+        s = mktime(s.timetuple())
+    d = datetime.fromtimestamp(s)
+    date = ''
+    if with_month:
+        date += ' ' + d.strftime('%b')
+    if with_date:
+        ndate = d.strftime('%d')
+        suffix = num_suffix(int(ndate))
+        date += ' ' + ndate + suffix
+    if with_year:
+        date += ', ' + d.strftime('%Y')
+    return date
+
+@template_filter
 def human_date(s):
+    if isinstance(s, datetime):
+        s = mktime(s.timetuple())
     d = datetime.fromtimestamp(s)
     n = datetime.today()
     if d.date() == n.date():

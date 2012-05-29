@@ -4,7 +4,10 @@ License: MIT, see LICENSE for details
 """
 
 import logging
-from time import time
+from time import time, mktime
+from datetime import datetime
+from math import ceil
+from faceoff.debug import debug
 from faceoff.db import use_db
 from faceoff.debug import debug
 from trueskill import TrueSkill
@@ -14,28 +17,66 @@ def find_match(db, **kwargs):
     return db.find('match', **kwargs)
 
 @use_db
-def search_matches(db, **kwargs):
-    return db.search('match', **kwargs)
-
-@use_db
-def get_match_history(db, league_id, user_id=None, start=0, count=100):
+def search_matches(db, league_id, user_id=None, time_start=None, 
+                         time_end=None, page=None, per_page=10,
+                         sort='date_created', order='desc'):
     params = [league_id]
+    fields = """
+        match.*, winner.id AS winner_id, winner.nickname AS winner_nickname, 
+        loser.id AS loser_id, loser.nickname AS loser_nickname 
+        """
     query = """
-        SELECT 
-            match.*, winner.id AS winner_id, winner.nickname AS winner_nickname, 
-            loser.id AS loser_id, loser.nickname AS loser_nickname 
         FROM match 
         INNER JOIN user AS winner ON winner.id = match.winner_id
         INNER JOIN user AS loser ON loser.id = match.loser_id
         WHERE match.league_id=? 
-        """
+        """ 
     if user_id is not None:
         query += " AND (winner.id=? OR loser.id=?) "
         params.extend([user_id, user_id])
-    query += ' ORDER BY match.date_created DESC '
-    if count is not None:
-        query += ' LIMIT %d, %d ' % (start, count)
-    return db.select(query, params)
+    if time_start is not None:
+        query += " AND match.date_created >= ? "
+        params.append(time_start)
+    if time_end is not None:
+        query += " AND match.date_created <= ? "
+        params.append(time_end)
+    query += ' ORDER BY match.%s %s ' % (db.clean(sort), db.clean(order))
+    if page is not None and page > 0:
+        return db.paginate(fields, query, params, page, per_page)
+    else:
+        return db.select("SELECT %s %s" % (fields, query), params)
+
+@use_db
+def find_older_match(db, league_id, user_id, timestamp):
+    result = search_matches(
+        db, league_id, user_id=user_id, time_end=timestamp, page=1, per_page=1
+        )
+    if not len(result['row_data']):
+        return None
+    match = result['row_data'][0]
+    match['date'] = datetime.fromtimestamp(match['date_created'])
+    match['dateargs'] = {
+        'year': match['date'].year,
+        'month': match['date'].strftime('%b').lower(),
+        'day': match['date'].day
+        }
+    return match
+
+@use_db
+def find_newer_match(db, league_id, user_id, timestamp):
+    result = search_matches(
+        db, league_id, user_id=user_id, time_start=timestamp, page=1, 
+        per_page=1, order='asc')
+    if not len(result['row_data']):
+        return None
+    match = result['row_data'][0]
+    match['date'] = datetime.fromtimestamp(match['date_created'])
+    match['dateargs'] = {
+        'year': match['date'].year,
+        'month': match['date'].strftime('%b').lower(),
+        'day': match['date'].day
+        }
+    return match
 
 @use_db
 def create_match(db, league_id, winner_user_id, loser_user_id, match_date=None, norebuild=False):
@@ -86,7 +127,7 @@ def rebuild_rankings(db, league_id):
     # generate a local player ranking profile based on user id. all matches will 
     # be traversed and this object will be populated to build the rankings.
     players = {}
-    for match in search_matches(db, league_id=league_id):
+    for match in db.search('match', league_id=league_id):
         w = match['winner_id']
         l = match['loser_id']
 

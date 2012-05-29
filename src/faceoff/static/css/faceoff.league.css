@@ -44,19 +44,18 @@ table.match-history thead tr th {
 
 table.match-history thead tr th.winner,
 table.match-history tbody tr td.winner {
-    width: 150px;
+    width: 135px;
     text-align: right;
 }
 
 table.match-history thead tr th.versus,
 table.match-history tbody tr td.versus {
-    width: 20px;
     text-align: center;
 }
 
 table.match-history thead tr th.loser,
 table.match-history tbody tr td.loser {
-    width: 150px;
+    width: 135px;
 }
 
 table.match-history tbody tr td.winner .rank,
@@ -67,8 +66,16 @@ table.match-history tbody tr td.loser .rank {
     color: #999;
 }
 
-table.match-history tbody tr td.date {
-    font-size: 12px;
+table.match-history thead tr th.time,
+table.match-history tbody tr td.time {
+    width: 75px;
+    text-align: center;
+}
+
+table.match-history thead tr th.draw,
+table.match-history tbody tr td.draw {
+    width: 75px;
+    text-align: center;
 }
 
 table.user-history {}
