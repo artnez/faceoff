@@ -9,6 +9,7 @@ import sqlite3
 import atexit
 import string # pylint:disable=W0402
 import logging
+from math import ceil
 from threading import current_thread
 from tempfile import gettempdir
 from contextlib import closing
@@ -322,6 +323,23 @@ class Connection(sqlite3.Connection):
     def close(self, *args, **kwargs):
         self._log('close')
         return sqlite3.Connection.close(self, *args, **kwargs)
+
+    def paginate(self, cols, sql, params, page, limit):
+        offset = (page - 1) * limit
+        totals_query = "SELECT COUNT(*) as `count` %s " % sql
+        result_query = "SELECT %s %s LIMIT %d, %d" % (cols, sql, offset, limit)
+        total_rows = self.execute(totals_query, params).fetchone()['count']
+        result = self.select(result_query, params)
+        next_page = page+1
+        total_pages = int(ceil(total_rows/float(limit)))
+        return {
+            'row_data': result, 
+            'total_rows': total_rows,
+            'total_pages': total_pages,
+            'rows_per_page': limit,
+            'prev_page': None if page is 1 else page-1,
+            'next_page': None if next_page > total_pages else next_page
+            }
 
     def _ident(self, path):
         """
