@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.4.0
+-----
+
+  * New UI for history page.
+  * New UI for admin page, improved navigation to admin.
+  * Better iOS support.
+  * Enabled cookie support for IP based hosts.
+  * Minor fixes.
+
 0.3.1
 -----
 
