@@ -16,7 +16,7 @@ sys.path.insert(1, os.path.join(project_dir, 'lib'))
 
 from argparse import ArgumentParser
 parser = ArgumentParser(usage='%(prog)s [options]', argument_default='')
-parser.add_argument('--host', metavar='<string>', dest='FACEOFF_HOST', default='faceoff.dev')
+parser.add_argument('--host', metavar='<string>', dest='FACEOFF_HOST', default='0')
 parser.add_argument('--port', metavar='<string>', dest='FACEOFF_PORT', default='5000')
 parser.add_argument('--config', metavar='<string>', dest='FACEOFF_CONFIG')
 parser.add_argument('--debug', action='store_const', const='1', dest='FACEOFF_DEBUG')
