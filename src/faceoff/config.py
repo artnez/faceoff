@@ -9,10 +9,10 @@ import os
 
 # flask
 LOGGER_NAME = 'faceoff'
-DEBUG = os.getenv('FACEOFF_DEBUG') == '1' 
+DEBUG = os.getenv('FACEOFF_DEBUG') == '1'
 SERVER_NAME = os.getenv('FACEOFF_HOST') + ':' + os.getenv('FACEOFF_PORT')
 SECRET_KEY = '89a1100b5a62059021260a75738e6e61' if DEBUG else os.urandom(24)
-PERMANENT_SESSION_LIFETIME = 60*60*24*365
+PERMANENT_SESSION_LIFETIME = 60 * 60 * 24 * 365
 SESSION_COOKIE_DOMAIN = '' if DEBUG else None
 
 # logging
@@ -27,6 +27,7 @@ MEMCACHED_SERVERS = 'localhost:1121'
 # database
 DB_PATH = os.getenv('FACEOFF_DB_PATH')
 DB_FIXTURES = os.getenv('FACEOFF_DB_FIXTURES')
+
 
 def init_app(app):
     app.config.from_object(__name__)

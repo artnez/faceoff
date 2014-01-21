@@ -4,21 +4,18 @@ License: MIT, see LICENSE for details
 """
 
 import os
-import logging
 from datetime import datetime, date
 from time import mktime
-from flask import \
-    g, request, session, flash, abort, redirect, url_for, send_from_directory, \
-    jsonify
+from flask import (
+    g, request, session, flash, abort, redirect, url_for, send_from_directory)
 from faceoff import app
-from faceoff.debug import debug
-from faceoff.forms import \
-    LoginForm, JoinForm, ReportForm, NewLeagueForm, SettingsForm, ProfileForm, \
-    AdminForm
+from faceoff.forms import (
+    LoginForm, JoinForm, ReportForm, NewLeagueForm, SettingsForm, ProfileForm,
+    AdminForm)
 from faceoff.helpers.decorators import authenticated, templated
-from faceoff.models.user import \
-    find_user, get_active_users, create_user, update_user, auth_login, \
-    auth_logout, find_user_id
+from faceoff.models.user import (
+    get_active_users, create_user, update_user, auth_login, auth_logout,
+    find_user_id)
 from faceoff.models.league import \
     find_league, get_active_leagues, get_inactive_leagues, create_league, \
     update_league
@@ -27,10 +24,12 @@ from faceoff.models.match import \
     rebuild_rankings, find_older_match, find_newer_match
 from faceoff.models.setting import get_setting, set_access_code
 
+
 @app.teardown_request
-def db_close(exception): # pylint:disable=W0613
+def db_close(exception):
     if hasattr(g, 'db'):
         g.db.close()
+
 
 @app.url_value_preprocessor
 def get_league_from_url(endpoint, view_args):
@@ -41,12 +40,14 @@ def get_league_from_url(endpoint, view_args):
         abort(404)
     g.current_league = league
 
+
 @app.url_defaults
 def add_league_to_url(endpoint, view_args):
-    if ('league' not in view_args and 
-        app.url_map.is_endpoint_expecting(endpoint, 'league') and 
-        hasattr(g, 'current_league')):
+    if ('league' not in view_args and
+        app.url_map.is_endpoint_expecting(endpoint, 'league') and
+            hasattr(g, 'current_league')):
         view_args['league'] = g.current_league['slug']
+
 
 @app.context_processor
 def inject_template_data():
@@ -57,16 +58,19 @@ def inject_template_data():
         d['current_league'] = g.current_league
     return d
 
+
 @app.route('/favicon.ico')
 def favicon():
     path = os.path.join(app.root_path, 'static')
     return send_from_directory(path, 'favicon.ico')
+
 
 @app.route('/gate')
 @templated()
 def gate():
     join_form = JoinForm(access_code=get_setting('access_code'))
     return dict(login_form=LoginForm(), join_form=join_form)
+
 
 @app.route('/login', methods=('GET', 'POST'))
 @templated()
@@ -79,10 +83,12 @@ def login():
     else:
         return redirect(url_for('login', fail=1))
 
+
 @app.route('/logout')
 def logout():
     auth_logout(session)
     return redirect(url_for('gate'))
+
 
 @app.route('/join', methods=('GET', 'POST'))
 @templated()
@@ -94,11 +100,13 @@ def join():
     session['user_id'] = user_id
     return redirect(url_for('landing'))
 
+
 @app.route('/')
 @templated()
 @authenticated
 def landing():
     return dict(active_leagues=get_active_leagues())
+
 
 @app.route('/profile', methods=('GET', 'POST'))
 @templated()
@@ -108,19 +116,20 @@ def profile():
     if request.method == 'POST' and form.validate():
         update_user(
             g.current_user['id'],
-            nickname = form.nickname.data,
-            password = form.password.data
-            )
+            nickname=form.nickname.data,
+            password=form.password.data)
         flash('Profile updated successfully!')
         return redirect(url_for('landing'))
     form.nickname.data = g.current_user['nickname']
     return dict(profile_form=form)
+
 
 @app.route('/inactive')
 @templated()
 @authenticated
 def inactive():
     return dict(inactive_leagues=get_inactive_leagues())
+
 
 @app.route('/new', methods=('GET', 'POST'))
 @templated()
@@ -129,8 +138,9 @@ def new_league():
     form = NewLeagueForm(request.form)
     if request.method != 'POST' or not form.validate():
         return dict(new_league_form=form)
-    create_league(form.name.data) 
+    create_league(form.name.data)
     return redirect(url_for('landing'))
+
 
 @app.route('/admin', methods=('GET', 'POST'))
 @templated()
@@ -144,6 +154,7 @@ def admin():
     flash('Settings saved')
     return redirect(url_for('admin'))
 
+
 @app.route('/<league>/')
 @templated()
 @authenticated
@@ -151,11 +162,11 @@ def dashboard():
     user = g.current_user
     league = g.current_league
     return dict(
-        report_form = ReportForm(get_active_users()),
-        current_ranking = get_user_standing(league['id'], user['id']),
+        report_form=ReportForm(get_active_users()),
+        current_ranking=get_user_standing(league['id'], user['id']),
         ranking=get_league_ranking(league['id']),
-        history=search_matches(league['id'], user_id=user['id'])
-        )
+        history=search_matches(league['id'], user_id=user['id']))
+
 
 @app.route('/<league>/report', methods=('POST',))
 @templated()
@@ -173,19 +184,21 @@ def report():
     create_match(g.current_league['id'], winner, loser)
     return redirect(url_for('dashboard'))
 
+
 @app.route('/<league>/standings/')
 @templated()
 @authenticated
 def standings():
     return dict(ranking=get_league_ranking(g.current_league['id']))
 
-@app.route('/<league>/history/', defaults={'nickname': None, 'year': None, 'month': None, 'day': None})
-@app.route('/<league>/history/<int:year>/', defaults={'nickname': None, 'month': None, 'day': None})
-@app.route('/<league>/history/<int:year>/<month>/', defaults={'nickname': None, 'day': None})
-@app.route('/<league>/history/<int:year>/<month>/<int:day>', defaults={'nickname': None})
-@app.route('/<league>/history/<nickname>/', defaults={'year': None, 'month': None, 'day': None})
-@app.route('/<league>/history/<nickname>/<int:year>/', defaults={'month': None, 'day': None})
-@app.route('/<league>/history/<nickname>/<int:year>/<month>/', defaults={'day': None})
+
+@app.route('/<league>/history/', defaults={'nickname': None, 'year': None, 'month': None, 'day': None})  # noqa
+@app.route('/<league>/history/<int:year>/', defaults={'nickname': None, 'month': None, 'day': None})  # noqa
+@app.route('/<league>/history/<int:year>/<month>/', defaults={'nickname': None, 'day': None})  # noqa
+@app.route('/<league>/history/<int:year>/<month>/<int:day>', defaults={'nickname': None})  # noqa
+@app.route('/<league>/history/<nickname>/', defaults={'year': None, 'month': None, 'day': None})  # noqa
+@app.route('/<league>/history/<nickname>/<int:year>/', defaults={'month': None, 'day': None})  # noqa
+@app.route('/<league>/history/<nickname>/<int:year>/<month>/', defaults={'day': None})  # noqa
 @app.route('/<league>/history/<nickname>/<int:year>/<month>/<int:day>')
 @templated()
 @authenticated
@@ -204,10 +217,12 @@ def history(nickname, year, month, day):
         day = today.day if month == today.strftime('%b').lower() else 1
         refresh = True
     if refresh:
-        kwargs = {'nickname': nickname, 'year': year, 'month': month, 'day': day}
+        kwargs = {
+            'nickname': nickname, 'year': year, 'month': month, 'day': day}
         return redirect(url_for('history', **kwargs))
     try:
-        date_start = datetime.strptime('%s-%s-%s' % (year, month, day), '%Y-%b-%d')
+        date_start = datetime.strptime(
+            '%s-%s-%s' % (year, month, day), '%Y-%b-%d')
         date_end = date_start.replace(hour=23, minute=59, second=59)
         time_start = mktime(date_start.timetuple())
         time_end = mktime(date_end.timetuple())
@@ -218,6 +233,7 @@ def history(nickname, year, month, day):
     older = find_older_match(league_id, user_id, time_start)
     return dict(matches=matches, time_start=time_start, time_end=time_end,
                 newer_match=newer, older_match=older, nickname=nickname)
+
 
 @app.route('/<league>/settings/', methods=('GET', 'POST'))
 @templated()
@@ -231,13 +247,13 @@ def settings():
         return dict(settings_form=form)
     if form.validate():
         league = update_league(
-            league['id'], 
-            name = form.name.data, 
-            active = True if form.active.data == '1' else False
-            )
+            league['id'],
+            name=form.name.data,
+            active=True if form.active.data == '1' else False)
         flash('League settings updated')
         return redirect(url_for('settings', league=league['slug']))
     return dict(settings_form=form)
+
 
 @app.route('/<league>/rebuild/', methods=('POST',))
 @templated()

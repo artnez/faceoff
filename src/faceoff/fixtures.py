@@ -6,53 +6,51 @@ License: MIT, see LICENSE for details
 """
 
 import os
-import json
-from math import ceil
+from logging import getLogger
 from time import mktime
 from datetime import datetime, timedelta
-from logging import getLogger, debug
-from random import choice, shuffle, randint
+from random import shuffle, randint
 from jinja2.utils import generate_lorem_ipsum
 from faceoff.models.user import create_user, get_active_users
-from faceoff.models.league import create_league, get_all_leagues, get_active_leagues
+from faceoff.models.league import (
+    create_league, get_all_leagues, get_active_leagues)
 from faceoff.models.match import create_match, rebuild_rankings
 from faceoff.models.setting import set_setting
 
 _logger = None
 
 HUMAN_NAMES = [
-    ['Wayne','Gretzky'], ['Bobby','Orr'], ['Gordie','Howe'], 
-    ['Mario','Lemieux'],['Maurice','Richard'], ['Doug','Harvey'], 
-    ['Jean','Beliveau'],['Bobby','Hull'], ['Terry','Sawchuk'], 
-    ['Eddie','Shore'], ['Guy','Lafleur'], ['Mark','Messier'], 
-    ['Jacques','Plante'], ['Ray','Bourque'],['Howie','Morenz'], 
-    ['Glenn','Hall'], ['Stan','Mikita'], ['Phil','Esposito'],['Denis','Potvin'], 
-    ['Mike','Bossy'], ['Ted','Lindsay'], ['Patrick','Roy'],['Red','Kelly'], 
-    ['Bobby','Clarke'], ['Larry','Robinson'], ['Ken','Dryden'],
-    ['Frank','Mahovlich'], ['Milt','Schmidt'], ['Paul','Coffey'],
-    ['Henri','Richard'], ['Bryan','Trottier'], ['Dickie','Moore'],
-    ['Newsy','Lalonde'], ['Syl','Apps'], ['Bill','Durnan'], 
-    ['Charlie','Conacher'],['Jaromir','Jagr'], ['Marcel','Dionne'], 
-    ['Joe','Malone'], ['Chris','Chelios'],['Dit','Clapper'], 
-    ['Bernie','Geoffrion'], ['Tim','Horton'], ['Bill','Cook'],
-    ['Johnny','Bucyk'], ['George','Hainsworth'], ['Gilbert','Perreault'],
-    ['Max','Bentley'], ['Brad','Park'], ['Jari','Kurri']
-    ]
+    ['Wayne', 'Gretzky'], ['Bobby', 'Orr'], ['Gordie', 'Howe'],
+    ['Mario', 'Lemieux'], ['Maurice', 'Richard'], ['Doug', 'Harvey'],
+    ['Jean', 'Beliveau'], ['Bobby', 'Hull'], ['Terry', 'Sawchuk'],
+    ['Eddie', 'Shore'], ['Guy', 'Lafleur'], ['Mark', 'Messier'],
+    ['Jacques', 'Plante'], ['Ray', 'Bourque'], ['Howie', 'Morenz'],
+    ['Glenn', 'Hall'], ['Stan', 'Mikita'], ['Phil', 'Esposito'],
+    ['Denis', 'Potvin'], ['Mike', 'Bossy'], ['Ted', 'Lindsay'],
+    ['Patrick', 'Roy'], ['Red', 'Kelly'], ['Bobby', 'Clarke'],
+    ['Larry', 'Robinson'], ['Ken', 'Dryden'], ['Frank', 'Mahovlich'],
+    ['Milt', 'Schmidt'], ['Paul', 'Coffey'], ['Henri', 'Richard'],
+    ['Bryan', 'Trottier'], ['Dickie', 'Moore'], ['Newsy', 'Lalonde'],
+    ['Syl', 'Apps'], ['Bill', 'Durnan'], ['Charlie', 'Conacher'],
+    ['Jaromir', 'Jagr'], ['Marcel', 'Dionne'], ['Joe', 'Malone'],
+    ['Chris', 'Chelios'], ['Dit', 'Clapper'], ['Bernie', 'Geoffrion'],
+    ['Tim', 'Horton'], ['Bill', 'Cook'], ['Johnny', 'Bucyk'],
+    ['George', 'Hainsworth'], ['Gilbert', 'Perreault'], ['Max', 'Bentley'],
+    ['Brad', 'Park'], ['Jari', 'Kurri']]
 
 GAME_NAMES = [
-    'Table Tennis', 'Chess', 'Thumb Wrestling', 'Foosball', 'Boxing', 
-    'Checkers', 'Scrabble', 'Poker', 'Billiards', 'Basketball', 'Flag Football',
-    'Horseshoes', 'Backgammon', 'Shuffleboard', 'Archery', 'Air Hockey', 
-    'Bowling', 'Tetris', 'Street Fighter'
-    ]
+    'Table Tennis', 'Chess', 'Thumb Wrestling', 'Foosball', 'Boxing',
+    'Checkers', 'Scrabble', 'Poker', 'Billiards', 'Basketball',
+    'Flag Football', 'Horseshoes', 'Backgammon', 'Shuffleboard', 'Archery',
+    'Air Hockey', 'Bowling', 'Tetris', 'Street Fighter']
 
 COMPANY_NAMES = [
-    ["Aperture Science"], ["BiffCo Enterprises"],["Bluth Company"],
-    ["Dunder Mifflin"], ["Globo Gym"],["InGen"],["Kramerica"],
-    ["Oceanic Airlines"], ["Omni Consumer Products"],["Oscorp Industries"],
+    ["Aperture Science"], ["BiffCo Enterprises"], ["Bluth Company"],
+    ["Dunder Mifflin"], ["Globo Gym"], ["InGen"], ["Kramerica"],
+    ["Oceanic Airlines"], ["Omni Consumer Products"], ["Oscorp Industries"],
     ["Rekall Incorporated"], ["Sterling Cooper Draper Pryce"],
-    ["Tyrell Corporation"], ["Umbrella Corporation"]
-    ]
+    ["Tyrell Corporation"], ["Umbrella Corporation"]]
+
 
 def init_app(app):
     """
@@ -61,9 +59,10 @@ def init_app(app):
     if app.config['DB_FIXTURES'] and not os.getenv('WERKZEUG_RUN_MAIN'):
         generate_full_db(app.db.connect(), truncate=True)
 
+
 def generate_full_db(db, truncate=False):
     """
-    Generates a complete database of data. Requires a valid database connection 
+    Generates a complete database of data. Requires a valid database connection
     object. If truncate is set to True, all existing data will be removed.
     """
     logger().info('generating full db')
@@ -78,10 +77,11 @@ def generate_full_db(db, truncate=False):
     [rebuild_rankings(db, league['id']) for league in get_all_leagues(db)]
     db.is_building = False
 
+
 def generate_users(db, min_count=4, max_count=12, truncate=False):
     """
     Generates a random amount of users into the given database connection
-    object. The amount of users will fall between `min_count` and `max_count`. 
+    object. The amount of users will fall between `min_count` and `max_count`.
     If `truncate` is True, all existing users will be deleted.
     """
     logger().info('creating users')
@@ -93,11 +93,12 @@ def generate_users(db, min_count=4, max_count=12, truncate=False):
     logger().info('created %d users' % len(users))
     return users
 
+
 def generate_leagues(db, min_count=2, max_count=6, truncate=False):
     """
     Generates a random amount of leagues into the given database connection
-    object. The amount of leagues will fall between `min_count` and `max_count`. 
-    If `truncate` is True, all existing leagues will be deleted.
+    object. The amount of leagues will fall between `min_count` and
+    `max_count`. If `truncate` is True, all existing leagues will be deleted.
     """
     logger().info('creating leagues')
     if truncate:
@@ -109,11 +110,13 @@ def generate_leagues(db, min_count=2, max_count=6, truncate=False):
     logger().info('created %d leagues' % len(leagues))
     return leagues
 
+
 def generate_settings(db):
     """
     Generates default application settings.
     """
     set_setting('access_code', 'letmeplay', db=db)
+
 
 def generate_matches(db, truncate=False):
     """
@@ -136,7 +139,9 @@ def generate_matches(db, truncate=False):
         for match in matches:
             match_date = match_date + timedelta(hours=diff_hours*24)
             match_time = mktime(match_date.timetuple())
-            create_match(db, match[0]['id'], match[1], match[2], match_date=match_time)
+            create_match(
+                db, match[0]['id'], match[1], match[2], match_date=match_time)
+
 
 def rand_users(min_count, max_count):
     """
@@ -153,9 +158,11 @@ def rand_users(min_count, max_count):
         rank = 'admin' if n < 2 else 'member'
         yield {'nickname': nickname, 'password': 'faceoff!', 'rank': rank}
 
+
 def rand_leagues(min_count, max_count):
     """
-    Returns a list of random objects that map the properties of a league record.
+    Returns a list of random objects that map the properties of a league
+    record.
     """
     games = GAME_NAMES
     shuffle(games)
@@ -166,11 +173,13 @@ def rand_leagues(min_count, max_count):
         active = True if randint(0, 3) else False
         yield {'name': name, 'description': desc, 'active': active}
 
+
 def rand_text(min_count, max_count):
     """
     Returns randomly generated text with the given paragraph count.
     """
     return generate_lorem_ipsum(n=randint(min_count, max_count), html=False)
+
 
 def logger():
     """

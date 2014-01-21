@@ -7,10 +7,11 @@ from functools import wraps
 from flask import g, request, session, render_template, url_for, redirect
 from faceoff.models.user import find_user
 
+
 def templated(template_name=None):
     """
-    Automatically renders a template named after the current endpoint. Will also
-    render the name provided if given.
+    Automatically renders a template named after the current endpoint. Will
+    also render the name provided if given.
     """
     def closure(f):
         @wraps(f)
@@ -27,10 +28,11 @@ def templated(template_name=None):
         return decorator
     return closure
 
+
 def authenticated(f):
     """
-    Asserts that an existing logged-in user session is active. If not, redirects
-    to the authenticate gate.
+    Asserts that an existing logged-in user session is active. If not,
+    redirects to the authenticate gate.
     """
     @wraps(f)
     def decorator(*args, **kwargs):

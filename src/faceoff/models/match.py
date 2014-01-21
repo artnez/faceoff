@@ -3,34 +3,31 @@ Copyright: (c) 2012 Artem Nezvigin <artem@artnez.com>
 License: MIT, see LICENSE for details
 """
 
-import logging
-from time import time, mktime
+from time import time
 from datetime import datetime
-from math import ceil
-from faceoff.debug import debug
 from faceoff.db import use_db
-from faceoff.debug import debug
 from trueskill import TrueSkill
+
 
 @use_db
 def find_match(db, **kwargs):
     return db.find('match', **kwargs)
 
+
 @use_db
-def search_matches(db, league_id, user_id=None, time_start=None, 
-                         time_end=None, page=None, per_page=10,
-                         sort='date_created', order='desc'):
+def search_matches(db, league_id, user_id=None, time_start=None, time_end=None,
+                   page=None, per_page=10, sort='date_created', order='desc'):
     params = [league_id]
     fields = """
-        match.*, winner.id AS winner_id, winner.nickname AS winner_nickname, 
-        loser.id AS loser_id, loser.nickname AS loser_nickname 
+        match.*, winner.id AS winner_id, winner.nickname AS winner_nickname,
+        loser.id AS loser_id, loser.nickname AS loser_nickname
         """
     query = """
-        FROM match 
+        FROM match
         INNER JOIN user AS winner ON winner.id = match.winner_id
         INNER JOIN user AS loser ON loser.id = match.loser_id
-        WHERE match.league_id=? 
-        """ 
+        WHERE match.league_id=?
+        """
     if user_id is not None:
         query += " AND (winner.id=? OR loser.id=?) "
         params.extend([user_id, user_id])
@@ -45,6 +42,7 @@ def search_matches(db, league_id, user_id=None, time_start=None,
         return db.paginate(fields, query, params, page, per_page)
     else:
         return db.select("SELECT %s %s" % (fields, query), params)
+
 
 @use_db
 def find_older_match(db, league_id, user_id, timestamp):
@@ -62,10 +60,11 @@ def find_older_match(db, league_id, user_id, timestamp):
         }
     return match
 
+
 @use_db
 def find_newer_match(db, league_id, user_id, timestamp):
     result = search_matches(
-        db, league_id, user_id=user_id, time_start=timestamp, page=1, 
+        db, league_id, user_id=user_id, time_start=timestamp, page=1,
         per_page=1, order='asc')
     if not len(result['row_data']):
         return None
@@ -78,39 +77,44 @@ def find_newer_match(db, league_id, user_id, timestamp):
         }
     return match
 
+
 @use_db
-def create_match(db, league_id, winner_user_id, loser_user_id, match_date=None, norebuild=False):
+def create_match(db, league_id, winner_user_id, loser_user_id, match_date=None,
+                 norebuild=False):
     match_id = db.insert(
         'match',
-        league_id = league_id,
-        winner_id = winner_user_id,
-        winner_rank = get_user_rank(db, league_id, winner_user_id),
-        loser_id = loser_user_id,
-        loser_rank = get_user_rank(db, league_id, loser_user_id),
-        date_created = int(time()) if match_date is None else match_date
-        )
+        league_id=league_id,
+        winner_id=winner_user_id,
+        winner_rank=get_user_rank(db, league_id, winner_user_id),
+        loser_id=loser_user_id,
+        loser_rank=get_user_rank(db, league_id, loser_user_id),
+        date_created=int(time()) if match_date is None else match_date)
     if not norebuild:
         rebuild_rankings(db, league_id)
     return match_id
+
 
 @use_db
 def get_league_ranking(db, league_id):
     return db.select("""
         SELECT ranking.*, user.nickname
-        FROM ranking 
+        FROM ranking
         INNER JOIN user ON user.id=ranking.user_id
-        WHERE ranking.league_id=? 
+        WHERE ranking.league_id=?
         ORDER BY ranking.rank ASC
         """, [league_id])
+
 
 @use_db
 def get_user_rank(db, league_id, user_id):
     rank = db.find('ranking', league_id=league_id, user_id=user_id)
     return None if rank is None else rank['rank']
 
+
 @use_db
 def get_user_standing(db, league_id, user_id):
     return db.find('ranking', league_id=league_id, user_id=user_id)
+
 
 @use_db
 def rebuild_rankings(db, league_id):
@@ -124,8 +128,9 @@ def rebuild_rankings(db, league_id):
 
     skill = TrueSkill()
 
-    # generate a local player ranking profile based on user id. all matches will 
-    # be traversed and this object will be populated to build the rankings.
+    # generate a local player ranking profile based on user id. all matches
+    # will be traversed and this object will be populated to build the
+    # rankings.
     players = {}
     for match in db.search('match', league_id=league_id):
         w = match['winner_id']
@@ -133,9 +138,9 @@ def rebuild_rankings(db, league_id):
 
         # create ranking profile if hasn't been added yet
         for p in [w, l]:
-            if not players.has_key(p):
+            if not p in players:
                 players[p] = {
-                    'id': p, 'win': 0, 'loss': 0, 'win_streak': 0, 
+                    'id': p, 'win': 0, 'loss': 0, 'win_streak': 0,
                     'loss_streak': 0, 'games': 0, 'rating': skill.Rating()}
 
         # define ranking profile properties, this will go into the db and will
@@ -166,7 +171,7 @@ def rebuild_rankings(db, league_id):
         fields = {
             'league_id': league_id, 'user_id': r['id'], 'rank': (i+1),
             'mu': r['rating'].mu, 'sigma': r['rating'].sigma, 'wins': r['win'],
-            'losses': r['loss'], 'win_streak': r['win_streak'], 
+            'losses': r['loss'], 'win_streak': r['win_streak'],
             'loss_streak': r['loss_streak'], 'games': r['games']
             }
         db.insert('ranking', pk=False, **fields)

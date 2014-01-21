@@ -8,6 +8,7 @@ License: MIT, see LICENSE for details
 from wtforms.validators import ValidationError
 from faceoff.db import use_db
 
+
 class UniqueNickname(object):
     """
     Validates that a value is a unique user nickname.

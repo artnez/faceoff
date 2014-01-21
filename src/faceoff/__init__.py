@@ -16,4 +16,4 @@ db.init_app(app)
 fixtures.init_app(app)
 tpl.init_app(app)
 
-import faceoff.views
+import faceoff.views  # flake8: noqa

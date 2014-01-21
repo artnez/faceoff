@@ -5,6 +5,7 @@ License: MIT, see LICENSE for details
 
 from werkzeug.contrib.cache import NullCache, MemcachedCache
 
+
 def init_app(app):
     """
     Configures the provided app cache services.
