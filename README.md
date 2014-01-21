@@ -26,10 +26,7 @@ make environment
 source environment
 ```
 
-Copyright
----------
+License
+-------
 
-© 2012 Artem Nezvigin (<http://artnez.com/>)
-
-See LICENSE for details.
-
+MIT - See LICENSE for details.
