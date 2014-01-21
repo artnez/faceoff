@@ -13,7 +13,6 @@ DEBUG = os.getenv('FACEOFF_DEBUG') == '1'
 SERVER_NAME = os.getenv('FACEOFF_HOST') + ':' + os.getenv('FACEOFF_PORT')
 SECRET_KEY = '89a1100b5a62059021260a75738e6e61' if DEBUG else os.urandom(24)
 PERMANENT_SESSION_LIFETIME = 60 * 60 * 24 * 365
-SESSION_COOKIE_DOMAIN = '' if DEBUG else None
 
 # logging
 LOG_LEVEL = os.getenv('FACEOFF_LOG_LEVEL')
