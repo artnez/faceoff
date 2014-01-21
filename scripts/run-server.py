@@ -7,12 +7,11 @@ Copyright: (c) 2012 Artem Nezvigin <artem@artnez.com>
 License: MIT, see LICENSE for details
 """
 
-import sys
-import os
+from sys import path
+from os import environ
+from os.path import dirname, join
 
-project_dir = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
-sys.path.insert(0, os.path.join(project_dir, 'src'))
-sys.path.insert(1, os.path.join(project_dir, 'lib'))
+path.append(join(dirname(__file__), '..'))
 
 from argparse import ArgumentParser
 parser = ArgumentParser(usage='%(prog)s [options]', argument_default='')
@@ -27,7 +26,7 @@ parser.add_argument('--log-level', metavar='<string>', dest='FACEOFF_LOG_LEVEL')
 parser.add_argument('--log-filter', metavar='<string>', dest='FACEOFF_LOG_FILTER')
 parser.add_argument('--log-ignore', metavar='<string>', dest='FACEOFF_LOG_IGNORE')
 args = parser.parse_args()
-os.environ.update(vars(args))
+environ.update(vars(args))
 
 from faceoff import app
 app.run(args.FACEOFF_HOST, int(args.FACEOFF_PORT), threaded=True)

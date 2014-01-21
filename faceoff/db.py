@@ -18,7 +18,7 @@ from uuid import uuid4, uuid5
 from hashlib import sha1
 from random import random, shuffle
 from time import time
-from natsort import natsort
+from natsort import natsorted
 from functools import wraps
 
 _curdir = os.path.dirname(__file__)
@@ -94,8 +94,7 @@ def get_schema_files(schema_path):
     Returns a list of schema SQL files, sorted by version number.
     """
     files = glob(os.path.join(schema_path, '*.sql'))
-    natsort(files)
-    return files
+    return natsorted(files)
 
 
 def get_schema_sql(schema_path):
