@@ -9,16 +9,22 @@ Requirements
 ### Python 
 
   - [python 2.7](http://python.org/)
-  - [flask 0.8](http://flask.pocoo.org/)
-  - [jinja 2.6](http://jinja.pocoo.org/)
-  - [werkzeug 0.8](http://werkzeug.pocoo.org/)
-  - [wtforms 0.6](http://wtforms.simplecodes.com/)
-  - [trueskill 0.1](http://packages.python.org/trueskill/)
+  - [flask 0.8.1](http://flask.pocoo.org/)
+  - [wtforms 0.6.3](http://wtforms.simplecodes.com/)
+  - [trueskill 0.4.1](http://packages.python.org/trueskill/)
 
 ### Others
 
   - [memcached 1.4](http://memcached.org/)
-  - Web server that supports [WSGI](http://www.wsgi.org/) 
+  - Web server that supports [WSGI](http://www.wsgi.org/)
+
+Local Setup
+-----------
+
+```bash
+make environment
+source environment
+```
 
 Copyright
 ---------
